@@ -1,9 +1,10 @@
 using Npgsql;
-using StockWatcher.Model;
+using StockWatcher.Model.Schemas;
 
-namespace StockWatcher.Data {
-    public class StockWatcherDb {
-        private NpgsqlConnection conn = new NpgsqlConnection(@"
+namespace StockWatcher.Model.Data {
+    public class StockSurveyDb {
+        private NpgsqlConnection conn = 
+            new NpgsqlConnection(@"
                 Host=localhost;
                 Username=myUsername;
                 Password=myPassword;

@@ -10,9 +10,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using StockWatcher.Model;
 
-namespace StockWatcher.Data {
+using StockWatcher.Model.Schemas;
+
+namespace StockWatcher.Model.Actions {
     public class PollStock {
         public PollStock() { }
 

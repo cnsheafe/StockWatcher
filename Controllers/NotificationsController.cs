@@ -14,8 +14,9 @@ using Twilio;
 using Twilio.Rest.Notify.V1.Service;
 using Twilio.Types;
 
-using StockWatcher.Data;
-using StockWatcher.Model;
+using StockWatcher.Model.Data;
+using StockWatcher.Model.Actions;
+using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Controllers {
     public class NotificationsController : Controller {

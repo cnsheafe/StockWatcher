@@ -5,9 +5,9 @@ using Twilio;
 using Twilio.Rest.Notify.V1.Service;
 using Twilio.Types;
 
-using StockWatcher.Model;
+using StockWatcher.Model.Schemas;
 
-namespace StockWatcher.Data {
+namespace StockWatcher.Model.Actions {
     public class TwilioAction {
         private string accountSid = 
             Environment.GetEnvironmentVariable(
@@ -27,7 +27,7 @@ namespace StockWatcher.Data {
             NotificationResource notification = NotificationResource.Create(
                 serviceSid,
                 identity: new List<string> {stock.uuid},
-                body: $"\n {stock.equity.ToUpper()} has reached price ${openPrice}"
+                body: $"\n {stock.equity.ToUpper()} has exceeded target price of {stock.price} and has reached price ${openPrice}"
             );
         }
     }
