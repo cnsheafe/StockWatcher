@@ -14,7 +14,8 @@ using Twilio.Rest.Api.V2010.Account;
 using Twilio.Rest.Notify.V1.Service;
 using Twilio.Types;
 
-using StockWatcher.Data;
+using StockWatcher.Model.Data;
+using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Controllers {
     public class AccountController : Controller {
@@ -22,10 +23,10 @@ namespace StockWatcher.Controllers {
         private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
-       [HttpPost]
+        [HttpPost]
         public void CreateBinding([FromBody]JObject info) {
             string uuid;
-            var db = new StockWatcherDb();
+            var db = new StockSurveyDb();
             do {
                 uuid = Guid.NewGuid().ToString();
             } while (!db.CheckUuid(uuid));
@@ -42,19 +43,27 @@ namespace StockWatcher.Controllers {
             Console.WriteLine(binding.ServiceSid);
             Console.WriteLine(binding.Identity);
         }
+
         [HttpGet]
         public void ListBindings() {
             TwilioClient.Init(accountSid, authToken);
             var bindings = BindingResource.Read(serviceSid);
+
             foreach (var binding in bindings) {
                 Console.WriteLine(binding.Identity);
             }
         }
 
-        public void Remove([FromBody]JObject userInfo) {
+        [HttpPost]
+        public string CreateAccount([FromBody]JObject account) {
+            var user = account.ToObject<User>();
+            var db = new AccountsDb();
+            if (db.Add(user)) 
+                return "Successfully created an account!";
+            else 
+                return "Account already exists";
+            
 
         }
-
-
     }
 }
