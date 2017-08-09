@@ -16,13 +16,6 @@ using StockWatcher.Model.Schemas;
 namespace StockWatcher.Model.Actions {
     public class PollStock {
         public PollStock() { }
-
-        public async Task<int> Test(int x, int y) {
-            Console.WriteLine(x+y);
-            Task<int> Plus = new Task<int>(() => x+y);
-            return await Plus;
-        }
-
         public async Task Poll(Stock stock) {
             var client = new HttpClient();
             string responseBody = "";
@@ -30,7 +23,7 @@ namespace StockWatcher.Model.Actions {
 
             var queryTerms = new StringBuilder();
             queryTerms.Append("function=time_series_intraday&");
-            queryTerms.Append($"symbol={stock.equity}&");
+            queryTerms.Append($"symbol={stock.Equity}&");
             queryTerms.Append("interval=1min&");
             queryTerms.Append($"apikey={AV_KEY}");
 
@@ -60,10 +53,11 @@ namespace StockWatcher.Model.Actions {
             Console.WriteLine(latestPrices);
             Console.WriteLine(openPrice);
 
-            if (openPrice > stock.price) {
+            if (openPrice > stock.Price) {
                 Console.WriteLine("Price reached!");
-                var twAction = new TwilioAction();
+                var twAction = new SmsAction();
                 twAction.NotifyUser(stock, openPrice);
+                Console.WriteLine("Finished sending notification");
             }
         }
     }
