@@ -3,7 +3,9 @@ using Npgsql;
 using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model.Data {
-    // Manage Accounts
+    /// <summary>
+    /// Manages user account information.
+    /// </summary>
     public class AccountsDb {
         private NpgsqlConnection conn = new NpgsqlConnection(@"
         Host=localhost;
@@ -12,7 +14,9 @@ namespace StockWatcher.Model.Data {
         Database=StockWatcher");
 
         private const string TABLENAME = "ACCOUNTS";
-
+        /// <summary>
+        /// Creates table if it doesn't exist.
+        /// </summary>
         public void Init() {
             conn.Open();
             var cmd = new NpgsqlCommand();
@@ -22,30 +26,36 @@ namespace StockWatcher.Model.Data {
                 id serial PRIMARY KEY,
                 username VARCHAR UNIQUE NOT NULL,
                 password VARCHAR NOT NULL,
-                email VARCHAR,
+                phone VARCHAR UNIQUE NOT NULL,
                 uuid VARCHAR UNIQUE NOT NULL)";
             cmd.ExecuteNonQuery();
             conn.Close();
         }
         // TODO: Have to add uuid checker to prevent collison
+        /// <summary>
+        /// Adds a user to the table
+        /// </summary>
+        /// <param name="user">User info including phone number</param>
+        /// <para/>
+        /// <returns>True if user was added to the table. Otherwise False.</returns>
         public bool Add(User user) {
-            user.uuid = Guid.NewGuid().ToString();
+            user.Uuid = Guid.NewGuid().ToString();
             Init();
             conn.Open();
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                INSERT INTO {TABLENAME} (username, password, uuid)
+                INSERT INTO {TABLENAME} (username, password, phone, uuid)
                 VALUES (
-                    '{user.username}',
-                    '{user.password}',
-                    '{user.uuid}'
+                    '{user.Username}',
+                    '{user.Password}',
+                    '{user.Phone}',
+                    '{user.Uuid}'
                 )
                 ON CONFLICT (username)
                 DO NOTHING";
 
                 if (cmd.ExecuteNonQuery() == 0) {
-                    Console.WriteLine("Row already exists");
                     conn.Close();
                     return false;
                 }
