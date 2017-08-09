@@ -10,11 +10,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Twilio;
-// using Twilio.Rest.Api.V2010.Account;
 using Twilio.Rest.Notify.V1.Service;
 using Twilio.Types;
 
-using StockWatcher.Model.Data;
 using StockWatcher.Model.Actions;
 using StockWatcher.Model.Schemas;
 
@@ -23,13 +21,9 @@ namespace StockWatcher.Controllers {
         private string accountSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
         private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
-       [HttpGet]
-        public void Test() {
-        }
 
         [HttpPost]
-        public void WatchPrice([FromBody]JObject stockJson) {
-            var stock = stockJson.ToObject<Stock>();
+        public void WatchPrice([FromBody]Stock stock) {
             BackgroundJob.Enqueue<PollStock>(pollStock => 
                 pollStock.Poll(stock)
             ); 
