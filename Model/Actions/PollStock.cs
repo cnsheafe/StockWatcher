@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Hangfire;
+
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -16,7 +18,7 @@ using StockWatcher.Model.Schemas;
 namespace StockWatcher.Model.Actions {
     public class PollStock {
         public PollStock() { }
-        public async Task Poll(Stock stock) {
+        public async Task Poll(Stock stock, string jobId) {
             var client = new HttpClient();
             string responseBody = "";
             string AV_KEY = Environment.GetEnvironmentVariable("AV_KEY");
@@ -57,6 +59,7 @@ namespace StockWatcher.Model.Actions {
                 Console.WriteLine("Price reached!");
                 var twAction = new SmsAction();
                 twAction.NotifyUser(stock, openPrice);
+                RecurringJob.RemoveIfExists(jobId);
                 Console.WriteLine("Finished sending notification");
             }
         }

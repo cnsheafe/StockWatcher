@@ -24,9 +24,16 @@ namespace StockWatcher.Controllers {
 
         [HttpPost]
         public void WatchPrice([FromBody]Stock stock) {
-            BackgroundJob.Enqueue<PollStock>(pollStock => 
-                pollStock.Poll(stock)
-            ); 
+            // BackgroundJob.Enqueue<PollStock>(pollStock => 
+            //     pollStock.Poll(stock)
+            // ); 
+            var jobId = Guid.NewGuid().ToString();
+            RecurringJob.AddOrUpdate<PollStock>(
+                jobId,
+                pollStock => 
+                pollStock.Poll(stock, jobId),
+                Cron.Minutely()
+            );
         }
     }
 }
