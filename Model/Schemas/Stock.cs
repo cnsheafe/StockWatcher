@@ -2,8 +2,8 @@
 
 namespace StockWatcher.Model.Schemas {
    public class Stock {
-       public string uuid {get; set;}
-       public string equity {get; set;}
-       public double price {get; set;}
+       public string Username {get; set;}
+       public string Equity {get; set;}
+       public double Price {get; set;}
    } 
 }
