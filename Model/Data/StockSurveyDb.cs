@@ -17,7 +17,7 @@ namespace StockWatcher.Model.Data {
             cmd.CommandText = $@"
             CREATE TABLE IF NOT EXISTS {TABLENAME}(
                 id serial PRIMARY KEY,
-                uuid VARCHAR NOT NULL,
+                username VARCHAR NOT NULL,
                 equity VARCHAR,
                 price MONEY)";
             cmd.ExecuteNonQuery();
@@ -43,20 +43,40 @@ namespace StockWatcher.Model.Data {
         public void AddWatch(Stock stock) {
             Init();
             conn.Open();
-            var cmd = new NpgsqlCommand();
-            cmd.CommandText = $@"
-            INSERT INTO {TABLENAME}(
-                uuid, 
-                equity, 
-                price
-            )
-            VALUES(
-                {stock.uuid},
-                {stock.equity},
-                {stock.price}
-            )";
-            cmd.ExecuteNonQuery();
+            using (var cmd = new NpgsqlCommand()) {
+                cmd.Connection = conn;
+                cmd.CommandText = $@"
+                INSERT INTO {TABLENAME}(
+                    username, 
+                    equity, 
+                    price
+                )
+                VALUES(
+                    {stock.Username},
+                    {stock.Equity},
+                    {stock.Price}
+                )";
+                cmd.ExecuteNonQuery();
+            };
             conn.Close();
+        }
+
+        public string GetUuid(string username) {
+            conn.Open();
+            string uuid = "";
+            using (var cmd = new NpgsqlCommand()) {
+                cmd.Connection = conn;
+                cmd.CommandText = $@"
+                SELECT uuid FROM accounts 
+                WHERE username = '{username}'";
+                using (var reader = cmd.ExecuteReader()) {
+                    while(reader.Read()) {
+                        uuid = reader.GetString(0);
+                    }
+                }
+            }
+            conn.Close();
+            return uuid;
         }
     }
 }
