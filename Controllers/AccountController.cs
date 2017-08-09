@@ -17,6 +17,8 @@ using Twilio.Types;
 using StockWatcher.Model.Data;
 using StockWatcher.Model.Schemas;
 
+using StockWatcher.Model.Actions;
+
 namespace StockWatcher.Controllers {
     public class AccountController : Controller {
         private string accountSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
@@ -24,46 +26,14 @@ namespace StockWatcher.Controllers {
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
         [HttpPost]
-        public void CreateBinding([FromBody]JObject info) {
-            string uuid;
-            var db = new StockSurveyDb();
-            do {
-                uuid = Guid.NewGuid().ToString();
-            } while (!db.CheckUuid(uuid));
-
-            TwilioClient.Init(accountSid, authToken);
-            Console.WriteLine(info);
-            string phoneNumber = info["info"]["phoneNumber"].ToString();
-
-            var binding = BindingResource.Create(
-                serviceSid,
-                identity: uuid,
-                bindingType: BindingResource.BindingTypeEnum.Sms,
-                address: phoneNumber);
-            Console.WriteLine(binding.ServiceSid);
-            Console.WriteLine(binding.Identity);
-        }
-
-        [HttpGet]
-        public void ListBindings() {
-            TwilioClient.Init(accountSid, authToken);
-            var bindings = BindingResource.Read(serviceSid);
-
-            foreach (var binding in bindings) {
-                Console.WriteLine(binding.Identity);
+        public string CreateAccount([FromBody]User user) {
+            var accounts = new AccountsDb();
+            var smsAction = new SmsAction();
+            if (accounts.Add(user)) {
+                smsAction.MakeBinding(user);
+                return "Success!";
             }
-        }
-
-        [HttpPost]
-        public string CreateAccount([FromBody]JObject account) {
-            var user = account.ToObject<User>();
-            var db = new AccountsDb();
-            if (db.Add(user)) 
-                return "Successfully created an account!";
-            else 
-                return "Account already exists";
-            
-
+            return "Account already exists";
         }
     }
 }
