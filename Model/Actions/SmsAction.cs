@@ -34,7 +34,6 @@ namespace StockWatcher.Model.Actions {
                 identity: new List<string> {uuid},
                 body: $"${stock.Equity.ToUpper()} has exceeded target price of {stock.Price} and has reached price ${openPrice}"
             );
-            Console.WriteLine(notification.Identities.ToString());
         }
         /// <summary>
         /// Registers user phone number to a UUID on Twilio
