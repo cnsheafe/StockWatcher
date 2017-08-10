@@ -9,76 +9,70 @@ namespace StockWatcher.Model.Data {
                 Username=myUsername;
                 Password=myPassword;
                 Database=StockWatcher");
-        private const string TABLENAME = "STOCK_REQUESTS";
+        private const string TABLE= "stock_requests";
+        private const string REQUEST_ID = "request_id";
         public void Init() {
             conn.Open();
             var cmd = new NpgsqlCommand();
             cmd.Connection = conn;
             cmd.CommandText = $@"
-            CREATE TABLE IF NOT EXISTS {TABLENAME}(
+            CREATE TABLE IF NOT EXISTS {TABLE}(
                 id serial PRIMARY KEY,
-                username VARCHAR [],
+                usernames VARCHAR [],
                 equity VARCHAR,
                 price MONEY,
-                request_uuid VARCHAR
+                {REQUEST_ID} VARCHAR UNIQUE
                 )";
             cmd.ExecuteNonQuery();
             conn.Close();
         }
-        public bool CheckUuid(string uuid) {
-            Init();
+        public bool IsRunning(string requestId) {
+            // Init();
             conn.Open();
             var cmd = new NpgsqlCommand();
             cmd.Connection = conn;
             cmd.CommandText = $@"
-                SELECT uuid from {TABLENAME}
-                WHERE uuid='{uuid}'
+                SELECT {REQUEST_ID} from {TABLE}
+                WHERE {REQUEST_ID} ='{requestId}'
                 ";
             if (cmd.ExecuteNonQuery() > 0) {
                 conn.Close();
-                return false;
+                return true;
             }
             conn.Close();
-            return true;
+            return false;
         }
 
-        public void AddWatch(Stock stock) {
-            Init();
+        public void Add(Stock stock) {
+            // Init();
             conn.Open();
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                INSERT INTO {TABLENAME}(
-                    username, 
+                INSERT INTO {TABLE}(
+                    usernames, 
                     equity, 
                     price
                 )
                 VALUES(
-                    {stock.Username},
-                    {stock.Equity},
-                    {stock.Price}
+                    '{stock.Username}',
+                    '{stock.Equity}',
+                    '{stock.Price}'
                 )";
                 cmd.ExecuteNonQuery();
             };
             conn.Close();
         }
 
-        public string GetUuid(string username) {
+        public void Remove(string requestId) {
             conn.Open();
-            string uuid = "";
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                SELECT uuid FROM accounts 
-                WHERE username = '{username}'";
-                using (var reader = cmd.ExecuteReader()) {
-                    while(reader.Read()) {
-                        uuid = reader.GetString(0);
-                    }
-                }
+                DELETE FROM {TABLE}
+                WHERE {REQUEST_ID} = '{requestId}'
+                ";
             }
-            conn.Close();
-            return uuid;
         }
     }
 }
