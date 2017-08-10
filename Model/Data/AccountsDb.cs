@@ -63,5 +63,22 @@ namespace StockWatcher.Model.Data {
                 return true;
             }
         }
+        public string GetUuid(string username) {
+        conn.Open();
+        string uuid = "";
+        using (var cmd = new NpgsqlCommand()) {
+            cmd.Connection = conn;
+            cmd.CommandText = $@"
+            SELECT uuid FROM {TABLENAME}
+            WHERE username = '{username}'";
+            using (var reader = cmd.ExecuteReader()) {
+                while(reader.Read()) {
+                    uuid = reader.GetString(0);
+                }
+            }
+        }
+        conn.Close();
+        return uuid;
     }
+ }
 }
