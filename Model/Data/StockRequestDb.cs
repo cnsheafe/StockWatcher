@@ -2,14 +2,14 @@ using Npgsql;
 using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model.Data {
-    public class StockSurveyDb {
+    public class StockRequestDb {
         private NpgsqlConnection conn = 
             new NpgsqlConnection(@"
                 Host=localhost;
                 Username=myUsername;
                 Password=myPassword;
                 Database=StockWatcher");
-        private const string TABLENAME = "STOCK_SURVEYS";
+        private const string TABLENAME = "STOCK_REQUESTS";
         public void Init() {
             conn.Open();
             var cmd = new NpgsqlCommand();
@@ -17,9 +17,11 @@ namespace StockWatcher.Model.Data {
             cmd.CommandText = $@"
             CREATE TABLE IF NOT EXISTS {TABLENAME}(
                 id serial PRIMARY KEY,
-                username VARCHAR NOT NULL,
+                username VARCHAR [],
                 equity VARCHAR,
-                price MONEY)";
+                price MONEY,
+                request_uuid VARCHAR
+                )";
             cmd.ExecuteNonQuery();
             conn.Close();
         }
