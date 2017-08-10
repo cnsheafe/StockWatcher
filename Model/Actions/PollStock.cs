@@ -20,6 +20,7 @@ namespace StockWatcher.Model.Actions {
         public PollStock() { }
         // TODO: Set up a limit on polls that can be taken (e.g. 3-5)
         // TODO: Allow user to edit, delete requests
+
         public async Task Poll(Stock stock, string jobId) {
             var client = new HttpClient();
             string responseBody = "";
@@ -60,8 +61,8 @@ namespace StockWatcher.Model.Actions {
             // TODO: Expire when end of trading day (e.g. 6:00pm est)
             if (openPrice > stock.Price) {
                 Console.WriteLine("Price reached!");
-                var twAction = new SmsAction();
-                twAction.NotifyUser(stock, openPrice);
+                var sms = new SmsAction();
+                sms.NotifyUser(stock, openPrice);
                 RecurringJob.RemoveIfExists(jobId);
                 Console.WriteLine("Finished sending notification");
             }
