@@ -2,6 +2,7 @@ using System;
 using Npgsql;
 using StockWatcher.Model.Schemas;
 
+    // TODO: Have to add uuid checker to prevent collison
 namespace StockWatcher.Model.Data {
     /// <summary>
     /// Manages user account information.
@@ -15,24 +16,6 @@ namespace StockWatcher.Model.Data {
 
         private const string TABLENAME = "ACCOUNTS";
         /// <summary>
-        /// Creates table if it doesn't exist.
-        /// </summary>
-        public void Init() {
-            conn.Open();
-            var cmd = new NpgsqlCommand();
-            cmd.Connection = conn;
-            cmd.CommandText = $@"
-            CREATE TABLE IF NOT EXISTS {TABLENAME}(
-                id serial PRIMARY KEY,
-                username VARCHAR UNIQUE NOT NULL,
-                password VARCHAR NOT NULL,
-                phone VARCHAR UNIQUE NOT NULL,
-                uuid VARCHAR UNIQUE NOT NULL)";
-            cmd.ExecuteNonQuery();
-            conn.Close();
-        }
-        // TODO: Have to add uuid checker to prevent collison
-        /// <summary>
         /// Adds a user to the table
         /// </summary>
         /// <param name="user">User info including phone number</param>
@@ -40,7 +23,6 @@ namespace StockWatcher.Model.Data {
         /// <returns>True if user was added to the table. Otherwise False.</returns>
         public bool Add(User user) {
             user.Uuid = Guid.NewGuid().ToString();
-            Init();
             conn.Open();
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
@@ -63,5 +45,22 @@ namespace StockWatcher.Model.Data {
                 return true;
             }
         }
+        public string GetUuid(string username) {
+        conn.Open();
+        string uuid = "";
+        using (var cmd = new NpgsqlCommand()) {
+            cmd.Connection = conn;
+            cmd.CommandText = $@"
+            SELECT uuid FROM {TABLENAME}
+            WHERE username = '{username}'";
+            using (var reader = cmd.ExecuteReader()) {
+                while(reader.Read()) {
+                    uuid = reader.GetString(0);
+                }
+            }
+        }
+        conn.Close();
+        return uuid;
     }
+ }
 }

@@ -12,6 +12,8 @@ using Hangfire;
 using Hangfire.AspNetCore;
 using Hangfire.PostgreSql;
 
+using StockWatcher.Model.Data;
+
 namespace StockWatcher
 {
     public class Startup
@@ -24,6 +26,7 @@ namespace StockWatcher
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            InitTables.Build();
         }
 
         public IConfigurationRoot Configuration { get; }

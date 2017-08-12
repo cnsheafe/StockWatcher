@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Npgsql;
 using StockWatcher.Model.Schemas;
 
@@ -9,76 +10,112 @@ namespace StockWatcher.Model.Data {
                 Username=myUsername;
                 Password=myPassword;
                 Database=StockWatcher");
-        private const string TABLENAME = "STOCK_REQUESTS";
-        public void Init() {
+        private const string TABLE= "stock_requests";
+        private const string REQUEST_ID = "request_id";
+        public bool IsRunning(string requestId) {
             conn.Open();
             var cmd = new NpgsqlCommand();
             cmd.Connection = conn;
             cmd.CommandText = $@"
-            CREATE TABLE IF NOT EXISTS {TABLENAME}(
-                id serial PRIMARY KEY,
-                username VARCHAR [],
-                equity VARCHAR,
-                price MONEY,
-                request_uuid VARCHAR
-                )";
-            cmd.ExecuteNonQuery();
-            conn.Close();
-        }
-        public bool CheckUuid(string uuid) {
-            Init();
-            conn.Open();
-            var cmd = new NpgsqlCommand();
-            cmd.Connection = conn;
-            cmd.CommandText = $@"
-                SELECT uuid from {TABLENAME}
-                WHERE uuid='{uuid}'
+                SELECT {REQUEST_ID} from {TABLE}
+                WHERE {REQUEST_ID} ='{requestId}'
                 ";
             if (cmd.ExecuteNonQuery() > 0) {
                 conn.Close();
-                return false;
+                return true;
             }
             conn.Close();
-            return true;
+            return false;
         }
 
-        public void AddWatch(Stock stock) {
-            Init();
+        public void Add(Stock stock) {
+            bool IsDuplicate = false;
             conn.Open();
+
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                INSERT INTO {TABLENAME}(
-                    username, 
-                    equity, 
-                    price
-                )
-                VALUES(
-                    {stock.Username},
-                    {stock.Equity},
-                    {stock.Price}
-                )";
-                cmd.ExecuteNonQuery();
-            };
+                SELECT {REQUEST_ID} FROM {TABLE}
+                WHERE {REQUEST_ID} = '{stock.RequestId}'";
+                if(cmd.ExecuteNonQuery() > 0) 
+                    IsDuplicate = true;
+            }
+
+            if (IsDuplicate) {
+                using (var cmd = new NpgsqlCommand()) {
+                    cmd.Connection = conn;
+                    cmd.CommandText = $@"
+                    UPDATE {TABLE}
+                    SET usernames = usernames || '{stock.Username}'
+                    WHERE {REQUEST_ID} = '{stock.RequestId}'
+                    ";
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            else {
+                using (var cmd = new NpgsqlCommand()) {
+                    cmd.Connection = conn;
+                    cmd.CommandText = $@"
+                    INSERT INTO {TABLE}(
+                        usernames, 
+                        equity, 
+                        price,
+                        {REQUEST_ID}
+                    )
+                    VALUES(
+                        ARRAY ['{stock.Username}'],
+                        '{stock.Equity}',
+                        '{stock.Price}',
+                        '{stock.RequestId}'
+                    )";
+                    cmd.ExecuteNonQuery();
+                };
+            }
             conn.Close();
         }
 
-        public string GetUuid(string username) {
+        public void Remove(string requestId) {
             conn.Open();
-            string uuid = "";
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                SELECT uuid FROM accounts 
-                WHERE username = '{username}'";
+                DELETE FROM {TABLE}
+                WHERE {REQUEST_ID} = '{requestId}'
+                ";
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public List<string> GetUsers(string requestId) {
+            conn.Open();
+            var users = new List<string>();
+
+            using (var cmd = new NpgsqlCommand()) {
+                cmd.Connection = conn;
+                cmd.CommandText = $@"
+                SELECT {REQUEST_ID} FROM {TABLE}
+                WHERE {REQUEST_ID} = '{requestId}'
+                ";
                 using (var reader = cmd.ExecuteReader()) {
-                    while(reader.Read()) {
-                        uuid = reader.GetString(0);
-                    }
+                    while(reader.Read())
+                        users.Add(reader.GetString(0));
                 }
             }
             conn.Close();
-            return uuid;
+            return users;
+        }
+
+        public void RemoveUser(string username) {
+            conn.Open();
+            using (var cmd = new NpgsqlCommand()) {
+                cmd.Connection = conn;
+                cmd.CommandText = $@"
+                UPDATE {TABLE}
+                SET users = array_remove(users, 'username')
+                ";
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }

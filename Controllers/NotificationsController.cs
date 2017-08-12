@@ -25,12 +25,19 @@ namespace StockWatcher.Controllers {
         [HttpPost]
         public void WatchPrice([FromBody]Stock stock) {
             var jobId = Guid.NewGuid().ToString();
-            RecurringJob.AddOrUpdate<PollStock>(
-                jobId,
-                pollStock => 
-                pollStock.Poll(stock, jobId),
-                Cron.Minutely()
-            );
+            if (QueueRequest.Add(stock)) {
+                RecurringJob.AddOrUpdate<PollStock>(
+                    jobId,
+                    pollStock => 
+                    pollStock.Poll(stock, jobId),
+                    Cron.Minutely()
+                );
+            }
+        }
+
+        [HttpPost]
+        public void CancelRequest([FromBody]Stock stock) {
+            // Remove user
         }
     }
 }
