@@ -10,14 +10,18 @@ namespace StockWatcher.Model.Data {
                 Username=myUsername;
                 Password=myPassword;
                 Database=StockWatcher");
-        private const string TABLE= "stock_requests";
+        
+        // Constants for TABLE NAMES and fields
+        // TODO: Change REQUESTS to REQUEST_HISTORY
+        private const string REQUESTS = "stock_requests";
+        private const string USER_REQUESTS = "user_requests";
         private const string REQUEST_ID = "request_id";
         public bool IsRunning(string requestId) {
             conn.Open();
             var cmd = new NpgsqlCommand();
             cmd.Connection = conn;
             cmd.CommandText = $@"
-                SELECT {REQUEST_ID} from {TABLE}
+                SELECT {REQUEST_ID} from {REQUESTS}
                 WHERE {REQUEST_ID} ='{requestId}'
                 ";
             if (cmd.ExecuteNonQuery() > 0) {
@@ -32,45 +36,32 @@ namespace StockWatcher.Model.Data {
             bool IsDuplicate = false;
             conn.Open();
 
+            // Query for duplicate request in user_requests 
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                SELECT {REQUEST_ID} FROM {TABLE}
-                WHERE {REQUEST_ID} = '{stock.RequestId}'";
+                SELECT {REQUEST_ID} FROM {USER_REQUESTS}
+                WHERE {REQUEST_ID} = '{stock.RequestId}'
+                AND username = '{stock.Username}'
+                ";
                 if(cmd.ExecuteNonQuery() > 0) 
                     IsDuplicate = true;
             }
 
-            if (IsDuplicate) {
+            if (!IsDuplicate) {
                 using (var cmd = new NpgsqlCommand()) {
                     cmd.Connection = conn;
                     cmd.CommandText = $@"
-                    UPDATE {TABLE}
-                    SET usernames = usernames || '{stock.Username}'
-                    WHERE {REQUEST_ID} = '{stock.RequestId}'
-                    ";
-                    cmd.ExecuteNonQuery();
-                }
-            }
-
-            else {
-                using (var cmd = new NpgsqlCommand()) {
-                    cmd.Connection = conn;
-                    cmd.CommandText = $@"
-                    INSERT INTO {TABLE}(
-                        usernames, 
-                        equity, 
-                        price,
-                        {REQUEST_ID}
+                    INSERT INTO {USER_REQUESTS}(
+                        request_id,
+                        username
                     )
                     VALUES(
-                        ARRAY ['{stock.Username}'],
-                        '{stock.Equity}',
-                        '{stock.Price}',
-                        '{stock.RequestId}'
-                    )";
-                    cmd.ExecuteNonQuery();
-                };
+                        '{stock.RequestId}',
+                        '{stock.Username}'
+                    )
+                    ";
+                }
             }
             conn.Close();
         }
@@ -80,7 +71,7 @@ namespace StockWatcher.Model.Data {
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                DELETE FROM {TABLE}
+                DELETE FROM {USER_REQUESTS}
                 WHERE {REQUEST_ID} = '{requestId}'
                 ";
                 cmd.ExecuteNonQuery();
@@ -94,7 +85,7 @@ namespace StockWatcher.Model.Data {
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                SELECT {REQUEST_ID} FROM {TABLE}
+                SELECT {REQUEST_ID} FROM {USER_REQUESTS}
                 WHERE {REQUEST_ID} = '{requestId}'
                 ";
                 using (var reader = cmd.ExecuteReader()) {
@@ -111,7 +102,7 @@ namespace StockWatcher.Model.Data {
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                UPDATE {TABLE}
+                UPDATE {REQUESTS}
                 SET users = array_remove(users, 'username')
                 ";
                 cmd.ExecuteNonQuery();
