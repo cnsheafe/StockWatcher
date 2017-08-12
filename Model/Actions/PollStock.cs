@@ -36,8 +36,9 @@ namespace StockWatcher.Model.Actions {
         /// </returns>
         public async Task Poll(Stock stock, string jobId) {
             //TODO: Add twilio notification for expired requests
-            if (PollStock.IsEndOfDay())
+            if (IsEndOfDay())
                 return;
+            
             var client = new HttpClient();
             string responseBody = "";
             string AV_KEY = Environment.GetEnvironmentVariable("AV_KEY");
