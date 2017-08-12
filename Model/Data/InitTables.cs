@@ -11,19 +11,21 @@ namespace StockWatcher.Model.Data {
                 Database=StockWatcher";
 
                 conn.Open();
-                const string REQ_TABLE = "stock_requests";
-                const string ACCT_TABLE = "accounts";
+                const string REQUESTS = "stock_requests";
+                const string ACCOUNTS = "accounts";
+                const string USER_REQUESTS = "user_requests";
                 const string REQUEST_ID = "request_id";
 
                 using (var reqCmd = new NpgsqlCommand()) {
                     reqCmd.Connection = conn;
                     reqCmd.CommandText = $@"
-                    CREATE TABLE IF NOT EXISTS {REQ_TABLE}(
+                    CREATE TABLE IF NOT EXISTS {REQUESTS}(
                         id serial PRIMARY KEY,
-                        usernames VARCHAR [],
-                        equity VARCHAR,
+                        username TEXT,
+                        equity TEXT,
                         price MONEY,
-                        {REQUEST_ID} VARCHAR
+                        {REQUEST_ID} TEXT,
+                        request_time TIMESTAMPZ
                     )";
                     reqCmd.ExecuteNonQuery();
                 }
@@ -31,14 +33,25 @@ namespace StockWatcher.Model.Data {
                 using (var acctCmd = new NpgsqlCommand()) {
                     acctCmd.Connection = conn;
                     acctCmd.CommandText = $@"
-                    CREATE TABLE IF NOT EXISTS {ACCT_TABLE}(
+                    CREATE TABLE IF NOT EXISTS {ACCOUNTS}(
                         id serial PRIMARY KEY,
-                        username VARCHAR UNIQUE NOT NULL,
-                        password VARCHAR NOT NULL,
-                        phone VARCHAR UNIQUE NOT NULL,
-                        uuid VARCHAR UNIQUE NOT NULL
+                        username TEXT UNIQUE NOT NULL,
+                        password TEXT NOT NULL,
+                        phone TEXT UNIQUE NOT NULL,
+                        uuid TEXT UNIQUE NOT NULL
                     )";
                     acctCmd.ExecuteNonQuery();
+                }
+
+                using (var jointCmd = new NpgsqlCommand()) {
+                    jointCmd.Connection = conn;
+                    jointCmd.CommandText = $@"
+                    CREATE TABLE IF NOT EXISTS {USER_REQUESTS}(
+                        row_id serial PRIMARY KEY,
+                        {REQUEST_ID} TEXT NOT NULL,
+                        username TEXT NOT NULL
+                    )";
+                    jointCmd.ExecuteNonQuery();
                 }
                 conn.Close();
             }
