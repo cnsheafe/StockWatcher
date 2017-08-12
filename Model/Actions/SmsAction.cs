@@ -23,15 +23,29 @@ namespace StockWatcher.Model.Actions {
                 "TwilioServiceSid"
             );
 
-        public void NotifyUser(Stock stock, double openPrice) {
-            var surveyDb = new StockSurveyDb(); 
-            string uuid = surveyDb.GetUuid(stock.Username);
-            Console.WriteLine(uuid);
+        /// <summary>
+        /// Notifies users via SMS about the latest stock price.
+        /// </summary>
+        /// <param name="usernames">
+        /// Usernames associated with the stock's requestId
+        /// </param>
+        /// <param name="stock">
+        /// The particular stock whose target price was met.
+        /// </param>
+        /// <param name="openPrice">
+        /// The latest stock price.
+        /// </param>
+        public void NotifyUsers(List<string> usernames, Stock stock, double openPrice) {
+            var request = new StockRequestDb(); 
+            var account = new AccountsDb();
+            var userIdentities = new List<string>();
+            foreach (string username in usernames) 
+                userIdentities.Add(account.GetUuid(username));
 
             TwilioClient.Init(accountSid, authToken);
             NotificationResource notification = NotificationResource.Create(
                 serviceSid,
-                identity: new List<string> {uuid},
+                identity: userIdentities,
                 body: $"${stock.Equity.ToUpper()} has exceeded target price of {stock.Price} and has reached price ${openPrice}"
             );
         }
