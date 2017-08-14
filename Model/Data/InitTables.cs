@@ -48,8 +48,8 @@ namespace StockWatcher.Model.Data {
                     jointCmd.CommandText = $@"
                     CREATE TABLE IF NOT EXISTS {USER_REQUESTS}(
                         row_id serial PRIMARY KEY,
-                        {REQUEST_ID} TEXT NOT NULL,
-                        username TEXT NOT NULL
+                        {REQUEST_ID} VARCHAR(256) NOT NULL,
+                        username VARCHAR(256) NOT NULL
                     )";
                     jointCmd.ExecuteNonQuery();
                 }
