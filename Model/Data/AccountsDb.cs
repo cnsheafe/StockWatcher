@@ -14,7 +14,7 @@ namespace StockWatcher.Model.Data {
         Password=myPassword;
         Database=StockWatcher");
 
-        private const string TABLENAME = "ACCOUNTS";
+        private const string ACCOUNTS = "ACCOUNTS";
         /// <summary>
         /// Adds a user to the table
         /// </summary>
@@ -27,7 +27,7 @@ namespace StockWatcher.Model.Data {
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                INSERT INTO {TABLENAME} (username, password, phone, uuid)
+                INSERT INTO {ACCOUNTS} (username, password, phone, uuid)
                 VALUES (
                     '{user.Username}',
                     '{user.Password}',
@@ -51,12 +51,15 @@ namespace StockWatcher.Model.Data {
         using (var cmd = new NpgsqlCommand()) {
             cmd.Connection = conn;
             cmd.CommandText = $@"
-            SELECT uuid FROM {TABLENAME}
-            WHERE username = '{username}'";
+            SELECT uuid FROM {ACCOUNTS}
+            WHERE username = '{username}'
+            ";
             using (var reader = cmd.ExecuteReader()) {
                 while(reader.Read()) {
+                    Console.WriteLine("In the loop");
                     uuid = reader.GetString(0);
                 }
+                reader.Close();
             }
         }
         conn.Close();
