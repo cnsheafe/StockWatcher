@@ -12,6 +12,7 @@ namespace StockWatcher.Model.Actions {
             request.Add(stock);
             if (request.IsRunning(stock.RequestId)) 
                 return false;
+            Console.WriteLine("Request was added");
             return true;
         }
 
