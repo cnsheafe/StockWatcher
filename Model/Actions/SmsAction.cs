@@ -39,8 +39,11 @@ namespace StockWatcher.Model.Actions {
             var request = new StockRequestDb(); 
             var account = new AccountsDb();
             var userIdentities = new List<string>();
-            foreach (string username in usernames) 
+
+            foreach (string username in usernames) {
+                Console.WriteLine(account.GetUuid(username));
                 userIdentities.Add(account.GetUuid(username));
+            }
 
             TwilioClient.Init(accountSid, authToken);
             NotificationResource notification = NotificationResource.Create(
@@ -65,5 +68,19 @@ namespace StockWatcher.Model.Actions {
             );
             Console.WriteLine(binding.Sid);
         }
+
+        public List<string> ListBindings() {
+            TwilioClient.Init(accountSid, authToken);
+            var bindings = BindingResource.Read(serviceSid);
+            var bindingIds = new List<string>();
+
+            foreach (var id in bindings) {
+                Console.WriteLine(id.Identity);
+                bindingIds.Add(id.Identity);
+            }
+
+            return bindingIds;
+        }
+
     }
 }
