@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Npgsql;
 using StockWatcher.Model.Schemas;
@@ -9,7 +10,8 @@ namespace StockWatcher.Model.Data {
                 Host=localhost;
                 Username=myUsername;
                 Password=myPassword;
-                Database=StockWatcher");
+                Database=StockWatcher"
+            );
         
         // Constants for TABLE NAMES and fields
         // TODO: Change REQUESTS to REQUEST_HISTORY
@@ -21,7 +23,7 @@ namespace StockWatcher.Model.Data {
             var cmd = new NpgsqlCommand();
             cmd.Connection = conn;
             cmd.CommandText = $@"
-                SELECT {REQUEST_ID} from {REQUESTS}
+                SELECT {REQUEST_ID} from {USER_REQUESTS}
                 WHERE {REQUEST_ID} ='{requestId}'
                 ";
             if (cmd.ExecuteNonQuery() > 0) {
@@ -47,8 +49,10 @@ namespace StockWatcher.Model.Data {
                 if(cmd.ExecuteNonQuery() > 0) 
                     IsDuplicate = true;
             }
+            Console.WriteLine("Is duplicate:{0}",IsDuplicate);
 
             if (!IsDuplicate) {
+                Console.WriteLine("Is not a duplicate");
                 using (var cmd = new NpgsqlCommand()) {
                     cmd.Connection = conn;
                     cmd.CommandText = $@"
@@ -61,6 +65,7 @@ namespace StockWatcher.Model.Data {
                         '{stock.Username}'
                     )
                     ";
+                    cmd.ExecuteNonQuery();
                 }
             }
             conn.Close();
@@ -85,12 +90,14 @@ namespace StockWatcher.Model.Data {
             using (var cmd = new NpgsqlCommand()) {
                 cmd.Connection = conn;
                 cmd.CommandText = $@"
-                SELECT {REQUEST_ID} FROM {USER_REQUESTS}
+                SELECT username FROM {USER_REQUESTS}
                 WHERE {REQUEST_ID} = '{requestId}'
                 ";
                 using (var reader = cmd.ExecuteReader()) {
-                    while(reader.Read())
+                    while(reader.Read()) {
                         users.Add(reader.GetString(0));
+                        Console.WriteLine(reader.GetString(0));
+                    };
                 }
             }
             conn.Close();
