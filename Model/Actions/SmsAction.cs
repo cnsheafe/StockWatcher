@@ -35,7 +35,7 @@ namespace StockWatcher.Model.Actions {
         /// <param name="openPrice">
         /// The latest stock price.
         /// </param>
-        public void NotifyUsers(List<string> usernames, Stock stock, double openPrice) {
+        public NotificationResource NotifyUsers(List<string> usernames, Stock stock, double openPrice) {
             var request = new StockRequestDb(); 
             var account = new AccountsDb();
             var userIdentities = new List<string>();
@@ -51,6 +51,7 @@ namespace StockWatcher.Model.Actions {
                 identity: userIdentities,
                 body: $"${stock.Equity.ToUpper()} has exceeded target price of {stock.Price} and has reached price ${openPrice}"
             );
+            return notification;
         }
         /// <summary>
         /// Registers user phone number to a UUID on Twilio
@@ -58,7 +59,7 @@ namespace StockWatcher.Model.Actions {
         /// <param name="user">
         /// User credentials for binding
         /// </param>
-        public void MakeBinding(User user) {
+        public BindingResource MakeBinding(User user) {
             TwilioClient.Init(accountSid, authToken);
             var binding = BindingResource.Create(
                 serviceSid,
@@ -66,7 +67,7 @@ namespace StockWatcher.Model.Actions {
                 bindingType: BindingResource.BindingTypeEnum.Sms,
                 address: user.Phone
             );
-            Console.WriteLine(binding.Sid);
+            return binding;
         }
 
         public List<string> ListBindings() {
@@ -78,7 +79,6 @@ namespace StockWatcher.Model.Actions {
                 Console.WriteLine(id.Identity);
                 bindingIds.Add(id.Identity);
             }
-
             return bindingIds;
         }
 
