@@ -27,13 +27,13 @@ namespace StockWatcher.Controllers {
 
         [HttpPost]
         public string CreateAccount([FromBody]User user) {
-            var accounts = new AccountsDb();
-            var smsAction = new SmsAction();
-            if (accounts.Add(user)) {
-                smsAction.MakeBinding(user);
-                return "Success!";
+            if (ModelState.IsValid) {
+                ManageAccount.AddUser(user);
+                return "valid";
             }
-            return "Account already exists";
+            else {
+                return "Is not valid";
+            }
         }
     }
 }
