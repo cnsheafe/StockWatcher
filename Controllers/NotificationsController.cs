@@ -25,7 +25,7 @@ namespace StockWatcher.Controllers {
         [HttpPost]
         public void WatchPrice([FromBody]Stock stock) {
             var jobId = Guid.NewGuid().ToString();
-            if (QueueRequest.Add(stock)) {
+            if (ManageRequest.Add(stock)) {
                 RecurringJob.AddOrUpdate<PollStock>(
                     jobId,
                     pollStock => 
