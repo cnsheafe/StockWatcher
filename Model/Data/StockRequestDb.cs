@@ -21,17 +21,23 @@ namespace StockWatcher.Model.Data {
         public bool IsRunning(string requestId) {
             conn.Open();
             var cmd = new NpgsqlCommand();
+            bool status = false;
+
             cmd.Connection = conn;
             cmd.CommandText = $@"
                 SELECT {REQUEST_ID} from {USER_REQUESTS}
                 WHERE {REQUEST_ID} ='{requestId}'
-                ";
-            if (cmd.ExecuteNonQuery() > 0) {
-                conn.Close();
-                return true;
+            ";
+            using (var reader = cmd.ExecuteReader()) {
+                if (reader.HasRows) {
+                    status = true;
+                    Console.WriteLine("Request is already running");
+                }
+                reader.Close();
+
             }
             conn.Close();
-            return false;
+            return status;
         }
 
         public void Add(Stock stock) {
@@ -46,10 +52,14 @@ namespace StockWatcher.Model.Data {
                 WHERE {REQUEST_ID} = '{stock.RequestId}'
                 AND username = '{stock.Username}'
                 ";
-                if(cmd.ExecuteNonQuery() > 0) 
-                    IsDuplicate = true;
+                using (var reader = cmd.ExecuteReader()) {
+                    if (reader.HasRows) {
+                        IsDuplicate = true;
+                        Console.WriteLine("Request already exists");
+                    }
+                    reader.Close();
+                }
             }
-            Console.WriteLine("Is duplicate:{0}",IsDuplicate);
 
             if (!IsDuplicate) {
                 Console.WriteLine("Is not a duplicate");
@@ -81,6 +91,7 @@ namespace StockWatcher.Model.Data {
                 ";
                 cmd.ExecuteNonQuery();
             }
+            conn.Close();
         }
 
         public List<string> GetUsers(string requestId) {
@@ -94,10 +105,12 @@ namespace StockWatcher.Model.Data {
                 WHERE {REQUEST_ID} = '{requestId}'
                 ";
                 using (var reader = cmd.ExecuteReader()) {
-                    while(reader.Read()) {
-                        users.Add(reader.GetString(0));
-                        Console.WriteLine(reader.GetString(0));
-                    };
+                    if (reader.HasRows) {
+                        while(reader.Read()) {
+                            users.Add(reader.GetString(0));
+                            Console.WriteLine(reader.GetString(0));
+                        };
+                    }
                 }
             }
             conn.Close();
