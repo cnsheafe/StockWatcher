@@ -16,8 +16,5 @@ namespace StockWatcher.Model.Actions {
             }
             return success;
         }
-
-        private static void CheckInput(User user) {
-        }
     }
 }
