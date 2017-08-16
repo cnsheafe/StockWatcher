@@ -36,7 +36,7 @@ namespace StockWatcher.Model.Actions {
         /// </returns>
         public async Task Poll(Stock stock, string jobId) {
             //TODO: Add twilio notification for expired requests
-            if (IsEndOfDay()) {
+            if (!IsOpenHours()) {
                 RecurringJob.RemoveIfExists(jobId);
                 var request = new StockRequestDb();
                 request.Remove(stock.RequestId);
@@ -96,12 +96,10 @@ namespace StockWatcher.Model.Actions {
             }
         }
 
-        private static bool IsEndOfDay() {
+        private static bool IsOpenHours() {
             DateTime now = DateTime.Now; 
             DateTime endOfDay = DateTime.Today.AddHours(18);
-            if (DateTime.Compare(now,endOfDay) > 0)
-                return true;
-            return false;
+            return DateTime.Compare(now, endOfDay) < 0 ? true : false;
         }
     }
 }
