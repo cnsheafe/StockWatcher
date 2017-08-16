@@ -46,24 +46,40 @@ namespace StockWatcher.Model.Data {
             }
         }
         public string GetUuid(string username) {
-        conn.Open();
-        string uuid = "";
-        using (var cmd = new NpgsqlCommand()) {
-            cmd.Connection = conn;
-            cmd.CommandText = $@"
-            SELECT uuid FROM {ACCOUNTS}
-            WHERE username = '{username}'
-            ";
-            using (var reader = cmd.ExecuteReader()) {
-                while(reader.Read()) {
-                    Console.WriteLine("In the loop");
-                    uuid = reader.GetString(0);
+            conn.Open();
+            string uuid = "";
+            using (var cmd = new NpgsqlCommand()) {
+                cmd.Connection = conn;
+                cmd.CommandText = $@"
+                SELECT uuid FROM {ACCOUNTS}
+                WHERE username = '{username}'
+                ";
+                using (var reader = cmd.ExecuteReader()) {
+                    while(reader.Read()) {
+                        Console.WriteLine("In the loop");
+                        uuid = reader.GetString(0);
+                    }
+                    reader.Close();
                 }
-                reader.Close();
             }
+            conn.Close();
+            return uuid;
         }
-        conn.Close();
-        return uuid;
+
+        public void Remove(User user) {
+            conn.Open();
+            using (var cmd = new NpgsqlCommand()) {
+                cmd.Connection = conn;
+                cmd.CommandText = $@"
+                DELETE FROM {ACCOUNTS}
+                WHERE  username ='{user.Username}'";
+                if (cmd.ExecuteNonQuery() > 0) {
+                    Console.WriteLine(
+                        $"{user.Username} was successfully removed."
+                    );
+                };
+            }
+            conn.Close();
+        }
     }
- }
 }
