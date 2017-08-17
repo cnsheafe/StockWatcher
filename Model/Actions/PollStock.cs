@@ -96,7 +96,13 @@ namespace StockWatcher.Model.Actions {
             }
         }
 
-        private static bool IsOpenHours() {
+        /// <summary>
+        /// Checks to see if time is during the trading day.
+        /// </summary>
+        /// <returns>
+        /// True if time is before 6:00pm. Otherwise, false.
+        /// </returns>
+        public static bool IsOpenHours() {
             DateTime now = DateTime.Now; 
             DateTime endOfDay = DateTime.Today.AddHours(18);
             return DateTime.Compare(now, endOfDay) < 0 ? true : false;

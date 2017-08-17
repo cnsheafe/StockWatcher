@@ -23,16 +23,22 @@ namespace StockWatcher.Controllers {
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
         [HttpPost]
-        public void WatchPrice([FromBody]Stock stock) {
-            var jobId = Guid.NewGuid().ToString();
-            if (ManageRequest.Add(stock)) {
-                RecurringJob.AddOrUpdate<PollStock>(
-                    jobId,
-                    pollStock => 
-                    pollStock.Poll(stock, jobId),
-                    Cron.Minutely()
-                );
+        public ActionResult WatchPrice([FromBody]Stock stock) {
+            var responseMsg = new ResponseMessage(){Status=false, Message="Request is already running"};
+            if (ModelState.IsValid) {
+                var jobId = Guid.NewGuid().ToString();
+                if (ManageRequest.Add(stock)) {
+                    RecurringJob.AddOrUpdate<PollStock>(
+                        jobId,
+                        pollStock => 
+                        pollStock.Poll(stock, jobId),
+                        Cron.Minutely()
+                    );
+                    responseMsg.Status = true;
+                    responseMsg.Message = "Request successfully queued";
+                }
             }
+            return Json(responseMsg);
         }
 
         [HttpPost]

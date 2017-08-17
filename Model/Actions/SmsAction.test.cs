@@ -13,6 +13,19 @@ using StockWatcher.Model.Data;
 namespace StockWatcher.Tests {
     public class SmsActionTest: IDisposable {
         private User user;
+        private string accountSid = 
+            Environment.GetEnvironmentVariable(
+                "TwilioAcctSid"
+            );
+        private string authToken = 
+            Environment.GetEnvironmentVariable(
+                "TwilioAuthToken"
+            );
+        private string serviceSid = 
+            Environment.GetEnvironmentVariable(
+                "TwilioServiceSid"
+            );
+
         public SmsActionTest() {
             // GIVEN a User
             // WITH valid fields
@@ -51,14 +64,23 @@ namespace StockWatcher.Tests {
             double openPrice
         ) {
             // GIVEN a list of usernames
-            // AND a Stock
-            // AND an openPrice
             List<string> usernames = new List<string>() {name};
+            // AND a Stock
             Stock stock = new Stock() {
                 Username = name,
                 Equity = equity,
                 Price = price
             };
+            // AND a binded identity 
+            CreateBinding();
+            TwilioClient.Init(accountSid, authToken);
+            var bindings = BindingResource.Read(serviceSid);
+            var bindingIds = new List<string>();
+
+            foreach (var binding in bindings) {
+                bindingIds.Add(binding.Identity);
+            }
+            // AND an openPrice
             // WHEN a notification is created
             var notification = new SmsAction().NotifyUsers(
                 usernames,

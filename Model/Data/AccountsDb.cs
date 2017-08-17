@@ -21,7 +21,7 @@ namespace StockWatcher.Model.Data {
         /// <param name="user">User info including phone number</param>
         /// <para/>
         /// <returns>True if user was added to the table. Otherwise False.</returns>
-        public bool Add(User user) {
+        public void Add(User user) {
             user.Uuid = Guid.NewGuid().ToString();
             conn.Open();
             using (var cmd = new NpgsqlCommand()) {
@@ -36,14 +36,9 @@ namespace StockWatcher.Model.Data {
                 )
                 ON CONFLICT (username)
                 DO NOTHING";
-
-                if (cmd.ExecuteNonQuery() == 0) {
-                    conn.Close();
-                    return false;
-                }
-                conn.Close();
-                return true;
+                cmd.ExecuteNonQuery();
             }
+            conn.Close();
         }
         public string GetUuid(string username) {
             conn.Open();
@@ -80,6 +75,26 @@ namespace StockWatcher.Model.Data {
                 };
             }
             conn.Close();
+        }
+
+        public bool UserExists(User user) {
+            conn.Open();
+            bool userExists =  false;
+            using (var cmd = new NpgsqlCommand()) {
+                cmd.Connection = conn;
+                cmd.CommandText = $@"
+                SELECT username FROM {ACCOUNTS}
+                WHERE username ='{user.Username}'
+                ";
+                using (var reader = cmd.ExecuteReader()) {
+                    if (reader.HasRows) {
+                        userExists = true;
+                    }
+                    reader.Close();
+                }
+            }
+            conn.Close();
+            return userExists;
         }
     }
 }
