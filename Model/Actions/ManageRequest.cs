@@ -9,7 +9,7 @@ namespace StockWatcher.Model.Actions {
     public static class ManageRequest {
         public static bool Add(Stock stock) {
             var request = new StockRequestDb();
-            if (request.IsRunning(stock.RequestId)) {
+            if (request.IsRunning(stock.RequestId) || !PollStock.IsOpenHours()) {
                 return false;
             }
 
