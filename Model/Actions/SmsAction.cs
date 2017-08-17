@@ -81,6 +81,5 @@ namespace StockWatcher.Model.Actions {
             }
             return bindingIds;
         }
-
     }
 }
