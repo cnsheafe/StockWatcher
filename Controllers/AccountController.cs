@@ -26,14 +26,18 @@ namespace StockWatcher.Controllers {
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
         [HttpPost]
-        public string CreateAccount([FromBody]User user) {
+        public ActionResult CreateAccount([FromBody]User user) {
+            var responseMsg = new ResponseMessage(){Status=false,Message="Account already in use"};
             if (ModelState.IsValid) {
-                ManageAccount.AddUser(user);
-                return "valid";
+                if (ManageAccount.AddUser(user)) {
+                    responseMsg.Status = true;
+                    responseMsg.Message = "Successfully created an account";
+                }
             }
             else {
-                return "Is not valid";
+                responseMsg.Message = "Incorrect input. Fix and try again.";
             }
+            return Json(responseMsg);
         }
     }
 }
