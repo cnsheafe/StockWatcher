@@ -17,8 +17,8 @@ namespace StockWatcher.Model.Schemas {
 
     [Required]
     public double Price {
-        get => Math.Round(price, 2, MidpointRounding.ToEven);
-        set => price = value;
+        get => price;
+        set => price = Math.Round(value,2,MidpointRounding.ToEven);
     } 
     public string RequestId {
         get => Equity + price.ToString();
