@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 using Hangfire;
 using Hangfire.AspNetCore;
 using Hangfire.PostgreSql;
 
-using StockWatcher.Model.Data;
+using StockWatcher.Model;
+using StockWatcher.Model.Services;
 
 namespace StockWatcher
 {
@@ -26,7 +28,6 @@ namespace StockWatcher
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            InitTables.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -38,6 +39,11 @@ namespace StockWatcher
             services.AddHangfire(config =>
                 config.UsePostgreSqlStorage(Configuration.GetConnectionString("HangfireConnection"))
             );
+            services.AddDbContext<StockDbContext>(options =>
+                options.UseNpgsql(Environment.GetEnvironmentVariable("SWConnString"))
+            );
+
+            services.AddTransient<ManageUser>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
