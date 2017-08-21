@@ -13,7 +13,6 @@ using Twilio;
 using Twilio.Rest.Notify.V1.Service;
 using Twilio.Types;
 
-// using StockWatcher.Model.Actions;
 using StockWatcher.Model.Services;
 using StockWatcher.Model.Schemas;
 
@@ -23,18 +22,21 @@ namespace StockWatcher.Controllers {
         private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
-        private SmsService service;
-        public NotificationsController(SmsService _service) 
+        private readonly SmsService smsService;
+        private readonly StockRequestService requestService;
+        public NotificationsController(SmsService _smsService, StockRequestService _requestService) 
         {
-            service = _service;
+            smsService = _smsService;
+            requestService = _requestService;
         }
 
         [HttpPost]
-        public ActionResult WatchPrice([FromBody]Stock stock) {
-            // var responseMsg = new ResponseMessage(){Status=false, Message="Request is already running"};
+        public ActionResult WatchPrice([FromBody]Stock stock) 
+        {
             string msg = "";
             if (ModelState.IsValid) {
-                var notification = service.NotifyUsers(stock,1);
+                var request = requestService.AddRequest(stock);
+                var notification = smsService.NotifyUsers(stock,1);
                 msg = notification.Body;
                 Response.StatusCode = 201;
                 // var jobId = Guid.NewGuid().ToString();
