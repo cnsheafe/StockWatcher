@@ -23,7 +23,8 @@ namespace StockWatcher.Controllers {
     public class UserController : Controller 
     {
         private ManageUser manageUser;
-        public UserController(ManageUser _manageUser) {
+        public UserController(ManageUser _manageUser) 
+        {
             manageUser = _manageUser;
         }
         private string UserSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
@@ -54,7 +55,8 @@ namespace StockWatcher.Controllers {
         }
 
         [HttpDelete]
-        public void RemoveUser([FromBody]User user) {
+        public void RemoveUser([FromBody]User user) 
+        {
             Response.StatusCode = 204;
             if (ModelState.IsValid)
             {

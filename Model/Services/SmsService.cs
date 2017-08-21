@@ -10,7 +10,8 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model.Services
 {
-    public class SmsService {
+    public class SmsService 
+    {
         private string accountSid = 
             Environment.GetEnvironmentVariable(
                 "TwilioAcctSid"
@@ -29,17 +30,14 @@ namespace StockWatcher.Model.Services
             context = _context;
         }
         
-        public NotificationResource NotifyUsers(Stock stock, double openPrice) {
-            // var request = new StockRequestDb(); 
-            // var account = new AccountsDb();
-            // var userIdentities = new List<string>();
+        public NotificationResource NotifyUsers(Stock stock, double openPrice) 
+        {
+            var userIdentities = new List<string>();
             List<Stock> matchingStocks = context.Stocks
                 .Where(s => s.RequestId == stock.RequestId)
                 .ToList();
-            // foreach (string username in usernames) {
-            //     Console.WriteLine(account.GetUuid(username));
-            //     userIdentities.Add(account.GetUuid(username));
-            // }
+            foreach (var match in matchingStocks) 
+                userIdentities.Add(match.Username);
 
             TwilioClient.Init(accountSid, authToken);
             NotificationResource notification = NotificationResource.Create(
