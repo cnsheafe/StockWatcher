@@ -38,9 +38,7 @@ namespace StockWatcher.Controllers {
             if (ModelState.IsValid) 
             {
                 if (manageUser.AddUser(user)) 
-                {
                     responseMsg = "Successfully created an account";
-                }
                 else
                 {
                     Response.StatusCode = 409;
@@ -53,6 +51,20 @@ namespace StockWatcher.Controllers {
                 responseMsg = "Incorrect input. Fix and try again.";
             }
             return Json(responseMsg);
+        }
+
+        [HttpDelete]
+        public void RemoveAccount([FromBody]User user) {
+            Response.StatusCode = 204;
+            if (ModelState.IsValid)
+            {
+                if (!manageUser.RemoveUser(user))
+                    Response.StatusCode = 409;
+            }
+            else
+            {
+                Response.StatusCode = 400;
+            }
         }
     }
 }
