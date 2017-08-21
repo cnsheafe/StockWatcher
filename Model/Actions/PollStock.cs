@@ -89,7 +89,7 @@ namespace StockWatcher.Model.Actions {
                 List<string> users = request.GetUsers(stock.RequestId);
                 Console.WriteLine("Price reached!");
                 var sms = new SmsAction();
-                sms.NotifyUsers(users, stock, openPrice);
+                // sms.NotifyUsers(users, stock, openPrice);
                 RecurringJob.RemoveIfExists(jobId);
                 request.Remove(stock.RequestId);
                 Console.WriteLine("Finished sending notification");
