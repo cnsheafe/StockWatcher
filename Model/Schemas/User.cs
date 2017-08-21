@@ -6,7 +6,6 @@ namespace StockWatcher.Model.Schemas
     [Table("Users")]
     public class User 
     {
-        [Key]
         public int Id {get;set;}
 
         [Required]
@@ -18,8 +17,10 @@ namespace StockWatcher.Model.Schemas
         public string Password {get; set;}
 
         [Required]
-        [StringLength(12)]
+        [Phone]
         public string Phone {get; set;}
+
+        [EmailAddress]
         public string Email {get; set;}
         public string Uuid {get; set;}
     }
