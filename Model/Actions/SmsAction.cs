@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 
+using Microsoft.EntityFrameworkCore;
+
 using Twilio;
 using Twilio.Rest.Notify.V1.Service;
 using Twilio.Types;
 
 using StockWatcher.Model.Schemas;
-using StockWatcher.Model.Data;
+using StockWatcher.Model.Services;
 
 namespace StockWatcher.Model.Actions {
     public class SmsAction {
@@ -35,15 +37,15 @@ namespace StockWatcher.Model.Actions {
         /// <param name="openPrice">
         /// The latest stock price.
         /// </param>
-        public NotificationResource NotifyUsers(List<string> usernames, Stock stock, double openPrice) {
-            var request = new StockRequestDb(); 
-            var account = new AccountsDb();
+        public NotificationResource NotifyUsers(List<User> users, Stock stock, double openPrice) {
+            // var request = new StockRequestDb(); 
+            // var account = new AccountsDb();
             var userIdentities = new List<string>();
 
-            foreach (string username in usernames) {
-                Console.WriteLine(account.GetUuid(username));
-                userIdentities.Add(account.GetUuid(username));
-            }
+            // foreach (string username in usernames) {
+            //     Console.WriteLine(account.GetUuid(username));
+            //     userIdentities.Add(account.GetUuid(username));
+            // }
 
             TwilioClient.Init(accountSid, authToken);
             NotificationResource notification = NotificationResource.Create(
