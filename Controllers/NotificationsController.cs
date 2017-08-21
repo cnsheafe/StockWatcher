@@ -24,21 +24,25 @@ namespace StockWatcher.Controllers {
 
         [HttpPost]
         public ActionResult WatchPrice([FromBody]Stock stock) {
-            var responseMsg = new ResponseMessage(){Status=false, Message="Request is already running"};
+            // var responseMsg = new ResponseMessage(){Status=false, Message="Request is already running"};
+            string msg = "";
             if (ModelState.IsValid) {
-                var jobId = Guid.NewGuid().ToString();
-                if (ManageRequest.Add(stock)) {
-                    RecurringJob.AddOrUpdate<PollStock>(
-                        jobId,
-                        pollStock => 
-                        pollStock.Poll(stock, jobId),
-                        Cron.Minutely()
-                    );
-                    responseMsg.Status = true;
-                    responseMsg.Message = "Request successfully queued";
-                }
+                var notification = new SmsAction().NotifyUsers(new List<string>(){stock.Username},stock,1);
+                msg = notification.Body;
+                Response.StatusCode = 204;
+                // var jobId = Guid.NewGuid().ToString();
+                // if (ManageRequest.Add(stock)) {
+                //     RecurringJob.AddOrUpdate<PollStock>(
+                //         jobId,
+                //         pollStock => 
+                //         pollStock.Poll(stock, jobId),
+                //         Cron.Minutely()
+                //     );
+                //     responseMsg.Status = true;
+                //     responseMsg.Message = "Request successfully queued";
+                // }
             }
-            return Json(responseMsg);
+            return Json(msg);
         }
 
         [HttpPost]
