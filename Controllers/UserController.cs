@@ -20,29 +20,29 @@ using StockWatcher.Model.Services;
 
 namespace StockWatcher.Controllers {
 
-    public class AccountController : Controller 
+    public class UserController : Controller 
     {
         private ManageUser manageUser;
-        public AccountController(ManageUser _manageUser) {
+        public UserController(ManageUser _manageUser) {
             manageUser = _manageUser;
         }
-        private string accountSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
+        private string UserSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
         private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
         [HttpPost]
-        public ActionResult CreateAccount([FromBody]User user) 
+        public ActionResult CreateUser([FromBody]User user) 
         {
             var responseMsg = "";
             Response.StatusCode = 201;
             if (ModelState.IsValid) 
             {
                 if (manageUser.AddUser(user)) 
-                    responseMsg = "Successfully created an account";
+                    responseMsg = "Successfully created an User";
                 else
                 {
                     Response.StatusCode = 409;
-                    responseMsg = "User account already exists";
+                    responseMsg = "User already exists";
                 }
             }
             else 
@@ -54,7 +54,7 @@ namespace StockWatcher.Controllers {
         }
 
         [HttpDelete]
-        public void RemoveAccount([FromBody]User user) {
+        public void RemoveUser([FromBody]User user) {
             Response.StatusCode = 204;
             if (ModelState.IsValid)
             {
