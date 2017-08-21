@@ -36,7 +36,7 @@ namespace StockWatcher.Model.Services {
                         User selectUser = context.Users
                             .Where(u => u.Username == user.Username)
                             .Single();
-                    new SmsAction().MakeBinding(selectUser); 
+                        new SmsAction().MakeBinding(selectUser); 
                     }
                 }
             return success;
