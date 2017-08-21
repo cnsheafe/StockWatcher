@@ -44,6 +44,8 @@ namespace StockWatcher
             );
 
             services.AddTransient<ManageUser>();
+            services.AddTransient<SmsService>();
+            services.AddTransient<StockRequestService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
