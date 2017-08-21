@@ -36,8 +36,10 @@ namespace StockWatcher.Model.Services
             List<Stock> matchingStocks = context.Stocks
                 .Where(s => s.RequestId == stock.RequestId)
                 .ToList();
-            foreach (var match in matchingStocks) 
-                userIdentities.Add(match.Username);
+            foreach (var match in matchingStocks) {
+                var matchingUser = context.Users.Single(u => u.Username == match.Username);
+                userIdentities.Add(matchingUser.Uuid);
+            }
 
             TwilioClient.Init(accountSid, authToken);
             NotificationResource notification = NotificationResource.Create(
