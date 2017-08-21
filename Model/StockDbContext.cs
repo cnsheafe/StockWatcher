@@ -4,7 +4,12 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model {
     public class StockDbContext: DbContext {
-        public StockDbContext(DbContextOptions<StockDbContext> options) : base(options) { }
+        public StockDbContext(DbContextOptions<StockDbContext> options) : base(options) {
+            var db = base.Database;
+            db.OpenConnection();
+            db.ExecuteSqlCommand(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"" ");
+            db.CloseConnection();
+         }
 
         public DbSet<User> Users {get; set;}
         public DbSet<Stock> Stocks {get; set;}
@@ -18,7 +23,10 @@ namespace StockWatcher.Model {
                         user.Username
                     })
                 .IsUnique();
-            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .Property(user => user.Uuid)
+                .HasDefaultValueSql("uuid_generate_v4()");
         }
     }
 }
