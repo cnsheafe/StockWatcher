@@ -16,8 +16,10 @@ using Twilio.Types;
 using StockWatcher.Model.Services;
 using StockWatcher.Model.Schemas;
 
-namespace StockWatcher.Controllers {
-    public class NotificationsController : Controller {
+namespace StockWatcher.Controllers 
+{
+    public class NotificationsController : Controller 
+    {
         private string accountSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
         private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
@@ -31,32 +33,37 @@ namespace StockWatcher.Controllers {
         }
 
         [HttpPost]
-        public ActionResult WatchPrice([FromBody]Stock stock) 
+        public void WatchPrice([FromBody]Stock stock) 
         {
-            string msg = "";
-            if (ModelState.IsValid) {
-                var request = requestService.AddRequest(stock);
-                var notification = smsService.NotifyUsers(stock,1);
-                msg = notification.Body;
-                Response.StatusCode = 201;
-                // var jobId = Guid.NewGuid().ToString();
-                // if (ManageRequest.Add(stock)) {
-                //     RecurringJob.AddOrUpdate<PollStock>(
-                //         jobId,
-                //         pollStock => 
-                //         pollStock.Poll(stock, jobId),
-                //         Cron.Minutely()
-                //     );
-                //     responseMsg.Status = true;
-                //     responseMsg.Message = "Request successfully queued";
-                // }
+            if (ModelState.IsValid) 
+            {
+                if (requestService.AddRequest(stock))
+                {
+                    var jobId = Guid.NewGuid().ToString();
+                    RecurringJob.AddOrUpdate<StockRequestService>(
+                        jobId,
+                        service =>
+                        service.QueryStock(stock,jobId),
+                        Cron.Minutely()
+                    );
+                    Response.StatusCode = 201;
+                }
+                else
+                {
+                    Response.StatusCode = 309;
+                }
             }
-            return Json(msg);
-        }
+            else
+            {
+                Response.StatusCode = 400;
+            }
 
+        }
         [HttpPost]
-        public void CancelRequest([FromBody]Stock stock) {
+        public void CancelRequest([FromBody]Stock stock) 
+        {
             // Remove user
         }
     }
 }
+
