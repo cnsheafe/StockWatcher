@@ -13,37 +13,57 @@ using Twilio;
 using Twilio.Rest.Notify.V1.Service;
 using Twilio.Types;
 
-using StockWatcher.Model.Actions;
+using StockWatcher.Model.Services;
 using StockWatcher.Model.Schemas;
 
-namespace StockWatcher.Controllers {
-    public class NotificationsController : Controller {
+namespace StockWatcher.Controllers 
+{
+    public class NotificationsController : Controller 
+    {
         private string accountSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
         private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
-        [HttpPost]
-        public ActionResult WatchPrice([FromBody]Stock stock) {
-            var responseMsg = new ResponseMessage(){Status=false, Message="Request is already running"};
-            if (ModelState.IsValid) {
-                var jobId = Guid.NewGuid().ToString();
-                if (ManageRequest.Add(stock)) {
-                    RecurringJob.AddOrUpdate<PollStock>(
-                        jobId,
-                        pollStock => 
-                        pollStock.Poll(stock, jobId),
-                        Cron.Minutely()
-                    );
-                    responseMsg.Status = true;
-                    responseMsg.Message = "Request successfully queued";
-                }
-            }
-            return Json(responseMsg);
+        private readonly SmsService smsService;
+        private readonly StockRequestService requestService;
+        public NotificationsController(SmsService _smsService, StockRequestService _requestService) 
+        {
+            smsService = _smsService;
+            requestService = _requestService;
         }
 
         [HttpPost]
-        public void CancelRequest([FromBody]Stock stock) {
+        public void WatchPrice([FromBody]Stock stock) 
+        {
+            if (ModelState.IsValid) 
+            {
+                if (requestService.AddRequest(stock))
+                {
+                    var jobId = Guid.NewGuid().ToString();
+                    RecurringJob.AddOrUpdate<StockRequestService>(
+                        jobId,
+                        service =>
+                        service.QueryStock(stock,jobId),
+                        Cron.Minutely()
+                    );
+                    Response.StatusCode = 201;
+                }
+                else
+                {
+                    Response.StatusCode = 309;
+                }
+            }
+            else
+            {
+                Response.StatusCode = 400;
+            }
+
+        }
+        [HttpPost]
+        public void CancelRequest([FromBody]Stock stock) 
+        {
             // Remove user
         }
     }
 }
+
