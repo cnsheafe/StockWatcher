@@ -3,12 +3,18 @@ using System.Linq;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+
+using Twilio;
+using Twilio.Types;
+using Twilio.Rest.Notify.V1.Service;
+
 using StockWatcher.Model;
 using StockWatcher.Model.Actions;
 using StockWatcher.Model.Schemas;
 
 
-namespace StockWatcher.Model.Services {
+namespace StockWatcher.Model.Services 
+{
     public class ManageUser {
         private StockDbContext context;
         public ManageUser(StockDbContext _StockDbContext) {
@@ -36,7 +42,7 @@ namespace StockWatcher.Model.Services {
                         User selectUser = context.Users
                             .Where(u => u.Username == user.Username)
                             .Single();
-                        new SmsAction().MakeBinding(selectUser); 
+                        BindUser(selectUser);
                     }
                 }
             return success;
@@ -61,6 +67,26 @@ namespace StockWatcher.Model.Services {
 
            return success;
         }
-        
+
+        /// <summary>
+        /// Registers user phone number to a UUID on Twilio
+        /// </summary>
+        /// <param name="user">
+        /// User credentials for binding
+        /// </param>
+        private BindingResource BindUser(User user) 
+        {
+            TwilioClient.Init(
+                Environment.GetEnvironmentVariable("TwilioAcctSid"),
+                Environment.GetEnvironmentVariable("TwilioAuthToken")
+            );
+            var binding = BindingResource.Create(
+                Environment.GetEnvironmentVariable("TwilioServiceSid"),
+                identity: user.Uuid,
+                bindingType: BindingResource.BindingTypeEnum.Sms,
+                address: user.Phone
+            );
+            return binding;
+        }
     }
 }
