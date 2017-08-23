@@ -9,7 +9,6 @@ using Twilio.Types;
 using Twilio.Rest.Notify.V1.Service;
 
 using StockWatcher.Model;
-using StockWatcher.Model.Actions;
 using StockWatcher.Model.Schemas;
 
 
