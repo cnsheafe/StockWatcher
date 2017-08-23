@@ -1,0 +1,31 @@
+{
+  "name": "stockwatcher",
+  "version": "1.0.0",
+  "description": "Set up SMS notifications for stock prices",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cnsheafe/StockWatcher.git"
+  },
+  "author": "Christofer Sheafe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cnsheafe/StockWatcher/issues"
+  },
+  "homepage": "https://github.com/cnsheafe/StockWatcher#readme",
+  "dependencies": {
+    "@types/react": "^16.0.4",
+    "@types/react-dom": "^15.5.4",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1"
+  },
+  "devDependencies": {
+    "awesome-typescript-loader": "^3.2.3",
+    "source-map-loader": "^0.2.1",
+    "typescript": "^2.4.2",
+    "webpack": "^3.5.5"
+  }
+}
