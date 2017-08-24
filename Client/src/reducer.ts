@@ -1,13 +1,10 @@
-import {ADD_GRAPH, addGraph, IAddGraphAction} from "./actions";
+import {ADD_GRAPH, addGraph} from "./actions";
 
-interface IState {
-    graphs: Array<string>
-}
-const initalState: IState = {
-    graphs: []
+const initalState = {
+    graphs: new Array<string>()
 }
 
-export default function stockApp(state: IState = initalState, action: IAddGraphAction): IState {
+export default function stockApp(state: any, action: any) {
 
     switch(action.type) {
         case ADD_GRAPH:
