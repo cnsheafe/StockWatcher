@@ -3,6 +3,13 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Webpack cache
+.awcache/
+
+# Webpack bundles
+Client/dist/bundle.js
+Client/dist/bundle.js.map
+
 # User-specific files
 *.suo
 *.user
