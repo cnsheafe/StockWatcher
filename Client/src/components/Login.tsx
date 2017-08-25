@@ -9,6 +9,7 @@ export class Login extends React.Component {
                 <form action="" method="post">
                     <div><input type="text"/></div>
                     <div><input type="text"/></div> 
+                    <button type="submit">Submit</button>
                 </form>
                 <Link to="/Signup">Don't have an account? Signup here!</Link>
             </div>
