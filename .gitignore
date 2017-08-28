@@ -6,6 +6,9 @@
 # Webpack cache
 .awcache/
 
+#Tsconfig
+/tsconfig.json
+
 # Webpack bundles
 Client/dist/bundle.js
 Client/dist/bundle.js.map
