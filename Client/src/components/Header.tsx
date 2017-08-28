@@ -1,12 +1,17 @@
 import * as React from "react";
 
-import {Link} from "react-router-dom";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { bindActionCreators } from "redux";
+
+import { toggleLogin } from "../actions";
 
 export interface ILoginProps {
     loggedIn: boolean
 }
 
-export class Header extends React.Component<ILoginProps> {
+class Header extends React.Component<ILoginProps> {
+
     render() {
         let header: JSX.Element;
         if (this.props.loggedIn) {
@@ -28,3 +33,10 @@ export class Header extends React.Component<ILoginProps> {
         return header;
     }
 }
+
+const mapStatetoProps = state => state;
+// function mapDispatchtoProps(dispatch) {
+//     return bindActionCreators( { toggleLogin },dispatch);
+// }
+
+export default connect(mapStatetoProps)(Header);
