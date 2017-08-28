@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export class Login extends React.Component {
     render() {
-        let loginForm: JSX.Element =
+        return(
             <div>
                 <h2>Login</h2>
                 <form action="" method="post">
@@ -13,7 +13,6 @@ export class Login extends React.Component {
                 </form>
                 <Link to="/Signup">Don't have an account? Signup here!</Link>
             </div>
-        ;
-        return loginForm;
+        );
     }
 }
