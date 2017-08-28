@@ -1,16 +1,29 @@
-import {ADD_GRAPH, addGraph} from "./actions";
+import {ADD_GRAPH, addGraph, TOGGLE_LOGIN, toggleLogin} from "./actions";
 
-const initalState = {
-    graphs: new Array<string>()
+interface IState {
+    loggedIn: boolean
+    graphs: Array<string>
 }
 
-export default function stockApp(state: any, action: any) {
+const initalState = {
+    loggedIn: false,
+    graphs: new Array<string>()
+};
+
+export default function reduce(state: IState = initalState, action: any) {
 
     switch(action.type) {
+
+        case TOGGLE_LOGIN:
+            return Object.assign({}, state, {
+                loggedIn: !state.loggedIn
+            });
+
         case ADD_GRAPH:
             return Object.assign({}, state, {
                 graphs: [...state.graphs, {equity: action.equity}]
             });
+
         default:
             return state;
     }
