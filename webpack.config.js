@@ -1,9 +1,22 @@
 const path = require("path");
+const appConfig = require("config-tsx");
+
+
+const options = {
+    "client-root": "Client",
+    "input-dir": path.posix.normalize(`${__dirname}/Client/src`),
+    "entry-file": path.posix.normalize(`${__dirname}/Client/src/index.tsx`),
+    "output-dir": path.posix.normalize(`${__dirname}/Client/dist`)
+};
+
+const appSettings = appConfig.createPaths(__dirname, options);
+
+appConfig.createTsConfig(__dirname, appSettings["out-dir"]);
 
 module.exports = {
-    entry: "./Client/src/index.tsx",
+    entry: appSettings["entry-file"],
     output: {
-        path: path.resolve(__dirname, "Client/dist"),
+        path: appSettings["output-dir"],
         filename: "bundle.js"
     },
     module: {
@@ -11,7 +24,7 @@ module.exports = {
             {
                 test: /\.jsx?$/,
                 include: [
-                    path.resolve(__dirname, "Client/src")
+                    appSettings["input-dir"]
                 ],
                 loader: "babel-loader",
                 options: {
@@ -24,7 +37,7 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 include: [
-                    path.resolve(__dirname, "Client/src")
+                    appSettings["input-dir"]
                 ],
                 loader: "awesome-typescript-loader",
                 options: {
@@ -43,13 +56,13 @@ module.exports = {
     resolve: {
         modules: [
             "node_modules",
-            path.resolve(__dirname, "Client/src")
+            appSettings["input-dir"]
         ],
         extensions: [".js", ".jsx", ".json", ".ts", ".tsx"]
     },
     devtool: "source-map",
     devServer: {
-        contentBase: "./Client/dist",
+        contentBase: appSettings["output-dir"],
         compress: true,
         port: 3000,
         historyApiFallback: true
