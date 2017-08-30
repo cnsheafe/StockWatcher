@@ -23,7 +23,7 @@ module.exports = env => {
             extensions: [".js", ".jsx", ".ts", ".tsx"]
         },
         output: {
-            filename: "[name].js",
+            filename: "[name].bundle.js",
             publicPath: "dist/"
         },
         module: {
@@ -68,7 +68,7 @@ module.exports = env => {
             mainFields: ["main"]
         },
         entry: {
-            "main-server": appSettings["entry-file"]
+            "server": appSettings["entry-file"]
         },
         output: {
             libraryTarget: "commonjs",
@@ -78,33 +78,14 @@ module.exports = env => {
         devtool: "inline-source-map"
     });
 
-    return serverConfig;
-    // entry: appSettings["entry-file"],
-    // output: {
-    //     path: appSettings["output-dir"],
-    //     publicPath: "/dist/",
-    //     filename: "main-server.js"
-    // },
-    // ,
-    // plugins: [new CheckerPlugin()],
-    // resolve: {
-    //     modules: [
-    //         "node_modules",
-    //         appSettings["input-dir"]
-    //     ],
-    //     extensions: [".js", ".jsx", ".json", ".ts", ".tsx"]
-    // },
-    // devtool: "source-map",
-    // // devServer: {
-    // //     contentBase: appSettings["output-dir"],
-    // //     compress: true,
-    // //     port: 3000,
-    // //     historyApiFallback: true
-    // // },
-    // context: __dirname,
-    // externals: {
-    //     react: "React",
-    //     "react-dom": "ReactDOM"
-    // },
-    // target: "node"
-}
+    const clientConfig = merge(sharedConfig(), {
+        entry: {
+            "client": path.posix.join(appSettings["input-dir"],"boot-client.tsx")
+        },
+        output: {
+            path: path.posix.resolve(__dirname, "./wwwroot/dist")
+        }
+    });
+
+    return [clientConfig, serverConfig];
+ }
