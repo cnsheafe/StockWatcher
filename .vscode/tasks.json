@@ -3,6 +3,7 @@
     "command": "dotnet",
     "isShellCommand": true,
     "args": [],
+<<<<<<< HEAD
     "tasks": [
         {
             "taskName": "build",
@@ -13,4 +14,14 @@
             "problemMatcher": "$msCompile"
         }
     ]
+=======
+    "tasks": [{
+        "taskName": "build",
+        "args": [
+            "${workspaceRoot}/StockWatcher.csproj"
+        ],
+        "isBuildCommand": true,
+        "problemMatcher": "$msCompile"
+    }]
+>>>>>>> 41927eea901e61f24141821c60ca36addd36dc73
 }
