@@ -35,6 +35,8 @@
     "@types/enzyme": "^2.8.6",
     "@types/jest": "^20.0.7",
     "@types/react-hot-loader": "^3.0.4",
+    "@types/webpack": "^3.0.10",
+    "@types/webpack-env": "^1.13.0",
     "aspnet-webpack": "^2.0.1",
     "aspnet-webpack-react": "^3.0.0",
     "awesome-typescript-loader": "^3.2.3",
