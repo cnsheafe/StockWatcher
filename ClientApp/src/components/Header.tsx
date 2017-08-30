@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
-import { toggleLogin } from "../actions";
+import { toggleLogin } from "../store/actions";
 
 export interface ILoginProps {
     loggedIn: boolean
