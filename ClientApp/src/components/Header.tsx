@@ -4,8 +4,6 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
-import { toggleLogin } from "../store/actions";
-
 export interface ILoginProps {
     loggedIn: boolean
 }
@@ -35,8 +33,5 @@ class Header extends React.Component<ILoginProps> {
 }
 
 const mapStatetoProps = state => state;
-// function mapDispatchtoProps(dispatch) {
-//     return bindActionCreators( { toggleLogin },dispatch);
-// }
 
 export default connect(mapStatetoProps)(Header);
