@@ -4,7 +4,6 @@ import {Provider} from "react-redux";
 import {createStore} from "redux";
 import {BrowserRouter, Route, Switch, StaticRouter} from "react-router-dom";
 import { BootFuncParams } from "aspnet-prerendering";
-import { AppContainer } from "react-hot-loader";
 
 import {App} from "./components/App";
 import {Signup} from "./components/Signup";
@@ -12,7 +11,7 @@ import {Login} from "./components/Login";
 import store from "./store/store";
 
 
-export default function Index(isForServer: boolean, params?: BootFuncParams): JSX.Element {
+export function Index(isForServer: boolean, params?: BootFuncParams): JSX.Element {
     let index: JSX.Element;
 
     if(isForServer) {
