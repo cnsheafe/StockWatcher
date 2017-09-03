@@ -13,7 +13,7 @@ fs.open("companylist.csv", "r", function(err, inputFd) {
         );
 
         rl.on("line", line => {
-            writeStream.write(line.substring(0, line.length -1) +"\n");
+            writeStream.write(line.substring(0, line.length -1) + "\n");
         });
     });
 });
