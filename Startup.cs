@@ -42,13 +42,15 @@ namespace StockWatcher
             services.AddHangfire(config =>
                 config.UsePostgreSqlStorage(Configuration.GetConnectionString("HangfireConnection"))
             );
+
             services.AddDbContext<StockDbContext>(options =>
-                options.UseNpgsql(Environment.GetEnvironmentVariable("SWConnString"))
+                options.UseNpgsql(Configuration.GetConnectionString("PostGresConnection"))
             );
 
             services.AddTransient<ManageUser>();
             services.AddTransient<SmsService>();
             services.AddTransient<StockRequestService>();
+            services.AddTransient<QueryCompanyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
