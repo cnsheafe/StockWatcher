@@ -5,11 +5,11 @@ CREATE TABLE IF NOT EXISTS companies(
     "Name" TEXT,
     "LastSale" TEXT,
     "MarketCap" TEXT,
-    "ADR TSO" TEXT,
+    "ADRTSO" TEXT,
     "IPOyear" TEXT,
     "Sector" TEXT,
     "Industry" TEXT,
-    "Summary Quote" TEXT
+    "SummaryQuote" TEXT
 );
 
-\copy companies FROM '~/Programming/NET/StockWatcher/processed-companylist.csv' DELIMITER ',' CSV HEADER;
+\copy companies FROM '~/Programming/NET/StockWatcher/processed-companylist.csv' WITH (FORMAT CSV, HEADER TRUE);
