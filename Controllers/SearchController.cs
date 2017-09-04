@@ -43,8 +43,8 @@ namespace StockWatcher.Controllers
             StringValues tmp;
             queryTerms.TryGetValue("searchphrase", out tmp);
             query.SearchPhrase = tmp;
-            queryTerms.TryGetValue("isequity", out tmp);
-            query.IsEquity = tmp;
+            queryTerms.TryGetValue("issymbol", out tmp);
+            query.IsSymbol = tmp;
             Response.StatusCode = 200;
             JsonResult apiResult = Json(service.SearchCompanies(query));
 

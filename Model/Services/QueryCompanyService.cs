@@ -22,7 +22,7 @@ namespace StockWatcher.Model.Services
             var table = context.Companies;
             IEnumerable<Company> companies;
 
-            if (query.IsEquity.CompareTo("true") == 0)
+            if (query.IsSymbol.CompareTo("true") == 0)
             {
                 companies = table
                     .Where(c => c.Symbol.Contains(query.SearchPhrase.ToUpper()))
