@@ -1,36 +1,57 @@
-import { createStore, Reducer } from "redux";
+import { createStore, Reducer, ActionCreator } from "redux";
+import * as Rx from "rxjs/Rx";
 
 export interface IState {
-    counter: number
+    loggedIn: boolean,
+    searchResults: Array<Company>
+}
+export interface Company {
+    symbol: string,
+    name: string
 }
 
-const INC = "INCREMENT";
-const DEC = "DECREMENT";
+const SEARCH = "SEARCH_RESULT";
+const LOGIN = "LOGGED_IN";
 
-interface Increment { type: "INCREMENT" };
-interface Decrement { type: "DECREMENT" };
+interface SearchResult {
+    type: "SEARCH_RESULT",
+    results: Array<Company>
+}
 
-type CountAction = Increment | Decrement;
+interface Login { type: "LOGGED_IN" }
 
-export const actions = {
-    increment: {type: INC} as Increment,
-    decrement: {type: DEC} as Decrement
-};
+type ValidAction = SearchResult | Login;
+
+export const createSearchResult: ActionCreator<SearchResult> = (results : Array<Company>) => {
+    return {
+        type: SEARCH,
+        results: results
+    } as SearchResult;
+}
+
+// export const actions = {
+//     // increment: {type: INC} as Increment,
+//     // decrement: {type: DEC} as Decrement,
+//     search: 
+
+// };
 
 
-function reducer(state: IState, action: CountAction): IState {
+
+function reducer(state: IState, action: ValidAction): IState {
     switch (action.type) {
-        case INC:
-            return Object.assign({}, state, { counter: state.counter + 1 });
-        case DEC:
-            return Object.assign({}, state, { counter: state.counter -1 });
+        case SEARCH:
+            return Object.assign({}, state, { searchResults: action.results })
+        case LOGIN:
+            return Object.assign({}, state, { loggedIn: !state.loggedIn })
         default:
             return state;
     }
 }
 
 const initialState: IState = {
-    counter: 0
+    loggedIn: false,
+    searchResults: []
 };
 
 export default createStore(reducer, initialState);
