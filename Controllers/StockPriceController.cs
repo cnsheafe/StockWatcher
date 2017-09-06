@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
 
 using StockWatcher.Model.Services;
@@ -11,10 +14,10 @@ namespace StockWatcher.Controllers
         {
             service = _service;
         }
-        public string Index([FromQuery]string StockSymbol)
+        public IActionResult Index([FromQuery]string StockSymbol)
         {
             var data = service.RequestStockPrice(StockSymbol);
-            return data.Result;
+            return Json(data.Result);
         }
     }
     
