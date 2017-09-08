@@ -20,5 +20,5 @@ namespace StockWatcher.Controllers
             return Json(data.Result);
         }
     }
-    
+
 }

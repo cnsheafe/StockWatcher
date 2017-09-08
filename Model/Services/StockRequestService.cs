@@ -19,14 +19,14 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model.Services
 {
-    public class StockRequestService 
+    public class StockRequestService
     {
         private readonly StockDbContext context;
         public StockRequestService(StockDbContext _context)
         {
             context = _context;
         }
-        public bool AddRequest(Stock stock) 
+        public bool AddRequest(Stock stock)
         {
             bool success = true;
 
@@ -37,7 +37,7 @@ namespace StockWatcher.Model.Services
             }
             catch (DbUpdateException dbException)
             {
-                var exception = (Npgsql.PostgresException) dbException.InnerException;
+                var exception = (Npgsql.PostgresException)dbException.InnerException;
                 Console.WriteLine(exception.SqlState);
                 success = false;
             }
@@ -58,7 +58,7 @@ namespace StockWatcher.Model.Services
             }
             catch (DbUpdateException dbException)
             {
-                var exception = (Npgsql.PostgresException) dbException.InnerException;
+                var exception = (Npgsql.PostgresException)dbException.InnerException;
                 Console.WriteLine(exception.SqlState);
                 success = false;
             }
@@ -67,7 +67,7 @@ namespace StockWatcher.Model.Services
 
         public async Task QueryStock(Stock stock, string jobId)
         {
-            using (var client = new HttpClient()) 
+            using (var client = new HttpClient())
             {
                 string responseBody = "";
                 string AV_KEY = Environment.GetEnvironmentVariable("AV_KEY");
@@ -86,12 +86,12 @@ namespace StockWatcher.Model.Services
                 avUri.Query = queryTerms.ToString();
 
                 // Asynchronous HTTP call
-                try 
+                try
                 {
                     responseBody = await client.GetStringAsync(avUri.Uri);
                     Console.WriteLine("Success!");
                 }
-                catch(HttpRequestException err) 
+                catch (HttpRequestException err)
                 {
                     Console.WriteLine("\n Exception Caught!");
                     Console.WriteLine($"Message: {err.Message}");
@@ -99,7 +99,7 @@ namespace StockWatcher.Model.Services
 
                 // Find the Open price for the most recent stock price
                 JObject parsedPriceHistory = JObject.Parse(responseBody);
-                JToken latestPrices = 
+                JToken latestPrices =
                     (JToken)parsedPriceHistory["Time Series (1min)"]
                     .First
                     .First;
@@ -110,7 +110,7 @@ namespace StockWatcher.Model.Services
 
                 // TODO: Expire when end of trading day (e.g. 6:00pm est)
                 // Sends notification to users if stock target price was met
-                if (openPrice > stock.Price) 
+                if (openPrice > stock.Price)
                 {
                     new SmsService(context).NotifyUsers(stock, openPrice);
                     RecurringJob.RemoveIfExists(jobId);
@@ -119,9 +119,9 @@ namespace StockWatcher.Model.Services
                 }
             }
         }
-        private static bool IsOpenHours() 
+        private static bool IsOpenHours()
         {
-            DateTime now = DateTime.Now; 
+            DateTime now = DateTime.Now;
             DateTime endOfDay = DateTime.Today.AddHours(18);
             return DateTime.Compare(now, endOfDay) < 0 ? true : false;
         }

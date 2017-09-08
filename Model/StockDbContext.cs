@@ -2,26 +2,27 @@ using Microsoft.EntityFrameworkCore;
 
 using StockWatcher.Model.Schemas;
 
-namespace StockWatcher.Model 
+namespace StockWatcher.Model
 {
-    public class StockDbContext: DbContext 
+    public class StockDbContext : DbContext
     {
-        public StockDbContext(DbContextOptions<StockDbContext> options) : base(options) 
+        public StockDbContext(DbContextOptions<StockDbContext> options) : base(options)
         {
             var db = base.Database;
             db.OpenConnection();
             db.ExecuteSqlCommand(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"" ");
             db.CloseConnection();
-         }
+        }
 
-        public DbSet<User> Users {get; set;}
-        public DbSet<Stock> Stocks {get; set;}
-        public DbSet<Company> Companies {get; set;}
-        protected override void OnModelCreating(ModelBuilder modelBuilder) 
+        public DbSet<User> Users { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
+        public DbSet<Company> Companies { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
-                .HasIndex(user => 
-                    new {
+                .HasIndex(user =>
+                    new
+                    {
                         user.Phone,
                         user.Username
                     })

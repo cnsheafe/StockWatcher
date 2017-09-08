@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-using StockWatcher.Model.Schemas;    
+using StockWatcher.Model.Schemas;
 
 
 namespace StockWatcher.Model.Services
@@ -59,9 +59,9 @@ namespace StockWatcher.Model.Services
                 var history = new DataPoint[priceHistory.Count()];
                 for (int i = 0; i < timestamps.Length; i++)
                 {
-                    history[i] = (new DataPoint(){TimeStamp=timestamps[i], Price=priceHistory[i]});
+                    history[i] = (new DataPoint() { TimeStamp = timestamps[i], Price = priceHistory[i] });
                 }
-                
+
 
                 return history;
 

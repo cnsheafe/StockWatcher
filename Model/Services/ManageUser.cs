@@ -12,59 +12,63 @@ using StockWatcher.Model;
 using StockWatcher.Model.Schemas;
 
 
-namespace StockWatcher.Model.Services 
+namespace StockWatcher.Model.Services
 {
-    public class ManageUser {
+    public class ManageUser
+    {
         private StockDbContext context;
-        public ManageUser(StockDbContext _StockDbContext) {
+        public ManageUser(StockDbContext _StockDbContext)
+        {
             context = _StockDbContext;
         }
-        public bool AddUser(User user) {
+        public bool AddUser(User user)
+        {
             bool success = true;
-                try
+            try
+            {
+                context.Users.Add(user);
+                context.SaveChanges();
+            }
+            catch (DbUpdateException dbException)
+            {
+                var exception = (Npgsql.PostgresException)dbException.InnerException;
+                string SqlCode = exception.SqlState;
+                Console.WriteLine(SqlCode);
+                success = string.CompareOrdinal(SqlCode, 1, "01P01", 1, length: 1) < 0;
+            }
+            finally
+            {
+                if (success)
                 {
-                    context.Users.Add(user);
-                    context.SaveChanges();
+                    // Gets the matching User for binding
+                    User selectUser = context.Users
+                        .Where(u => u.Username == user.Username)
+                        .Single();
+                    BindUser(selectUser);
                 }
-                catch (DbUpdateException dbException)
-                {
-                    var exception = (Npgsql.PostgresException) dbException.InnerException;
-                    string SqlCode = exception.SqlState;
-                    Console.WriteLine(SqlCode);
-                    success = string.CompareOrdinal(SqlCode, 1, "01P01", 1, length: 1) < 0;
-                }
-                finally
-                {
-                    if(success)
-                    {
-                        // Gets the matching User for binding
-                        User selectUser = context.Users
-                            .Where(u => u.Username == user.Username)
-                            .Single();
-                        BindUser(selectUser);
-                    }
-                }
+            }
             return success;
         }
 
-        public bool RemoveUser(User user) {
+        public bool RemoveUser(User user)
+        {
             bool success = true;
-                try
-                {
-                    User selectedUser = context.Users
-                        .Single(u => u.Username == user.Username);
-                    context.Remove(selectedUser);
-                    context.SaveChanges();
+            try
+            {
+                User selectedUser = context.Users
+                    .Single(u => u.Username == user.Username);
+                context.Remove(selectedUser);
+                context.SaveChanges();
 
-                }
-                catch (DbUpdateException dbException)
-                {
-                    var exception = (Npgsql.PostgresException) dbException.InnerException;
-                    Console.WriteLine(exception.SqlState);
-                    success = false;
-                }
+            }
+            catch (DbUpdateException dbException)
+            {
+                var exception = (Npgsql.PostgresException)dbException.InnerException;
+                Console.WriteLine(exception.SqlState);
+                success = false;
+            }
 
-           return success;
+            return success;
         }
 
         /// <summary>
@@ -73,7 +77,7 @@ namespace StockWatcher.Model.Services
         /// <param name="user">
         /// User credentials for binding
         /// </param>
-        private BindingResource BindUser(User user) 
+        private BindingResource BindUser(User user)
         {
             TwilioClient.Init(
                 Environment.GetEnvironmentVariable("TwilioAcctSid"),

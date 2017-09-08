@@ -14,7 +14,7 @@ using StockWatcher.Model.Services;
 
 namespace StockWatcher.Controllers
 {
-    public class SearchController: Controller
+    public class SearchController : Controller
     {
         private readonly QueryCompanyService service;
         public SearchController(QueryCompanyService _service)
@@ -38,7 +38,7 @@ namespace StockWatcher.Controllers
                     Response.StatusCode = 400;
                     return Json("Error");
                 }
-            }    
+            }
 
             StringValues tmp;
             queryTerms.TryGetValue("searchphrase", out tmp);

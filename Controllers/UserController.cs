@@ -18,12 +18,13 @@ using StockWatcher.Model;
 using StockWatcher.Model.Schemas;
 using StockWatcher.Model.Services;
 
-namespace StockWatcher.Controllers {
+namespace StockWatcher.Controllers
+{
 
-    public class UserController : Controller 
+    public class UserController : Controller
     {
         private ManageUser manageUser;
-        public UserController(ManageUser _manageUser) 
+        public UserController(ManageUser _manageUser)
         {
             manageUser = _manageUser;
         }
@@ -32,30 +33,33 @@ namespace StockWatcher.Controllers {
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
         [HttpPost]
-        public ActionResult CreateUser([FromBody]User user) 
+        public void CreateUser([FromForm]User user)
         {
             var responseMsg = "";
             Response.StatusCode = 201;
-            if (ModelState.IsValid) 
+            if (ModelState.IsValid)
             {
-                if (manageUser.AddUser(user)) 
+                if (manageUser.AddUser(user))
                     responseMsg = "Successfully created an User";
                 else
                 {
-                    Response.StatusCode = 409;
+                    // Response.StatusCode = 409;
+                    Response.Redirect("/signup");
                     responseMsg = "User already exists";
                 }
             }
-            else 
+            else
             {
-                Response.StatusCode = 400;
+                // Response.StatusCode = 400;
+                Response.Redirect("/signup");
                 responseMsg = "Incorrect input. Fix and try again.";
             }
-            return Json(responseMsg);
+            Response.Redirect("/");
+            // return Json(responseMsg);
         }
 
         [HttpDelete]
-        public void RemoveUser([FromBody]User user) 
+        public void RemoveUser([FromBody]User user)
         {
             Response.StatusCode = 204;
             if (ModelState.IsValid)

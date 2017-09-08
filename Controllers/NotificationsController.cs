@@ -16,9 +16,9 @@ using Twilio.Types;
 using StockWatcher.Model.Services;
 using StockWatcher.Model.Schemas;
 
-namespace StockWatcher.Controllers 
+namespace StockWatcher.Controllers
 {
-    public class NotificationsController : Controller 
+    public class NotificationsController : Controller
     {
         private string accountSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
         private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
@@ -26,16 +26,16 @@ namespace StockWatcher.Controllers
 
         private readonly SmsService smsService;
         private readonly StockRequestService requestService;
-        public NotificationsController(SmsService _smsService, StockRequestService _requestService) 
+        public NotificationsController(SmsService _smsService, StockRequestService _requestService)
         {
             smsService = _smsService;
             requestService = _requestService;
         }
 
         [HttpPost]
-        public void WatchPrice([FromBody]Stock stock) 
+        public void WatchPrice([FromBody]Stock stock)
         {
-            if (ModelState.IsValid) 
+            if (ModelState.IsValid)
             {
                 if (requestService.AddRequest(stock))
                 {
@@ -43,7 +43,7 @@ namespace StockWatcher.Controllers
                     RecurringJob.AddOrUpdate<StockRequestService>(
                         jobId,
                         service =>
-                        service.QueryStock(stock,jobId),
+                        service.QueryStock(stock, jobId),
                         Cron.Minutely()
                     );
                     Response.StatusCode = 201;
@@ -60,7 +60,7 @@ namespace StockWatcher.Controllers
 
         }
         [HttpPost]
-        public void CancelRequest([FromBody]Stock stock) 
+        public void CancelRequest([FromBody]Stock stock)
         {
             // Remove user
         }
