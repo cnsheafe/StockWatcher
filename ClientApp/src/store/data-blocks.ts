@@ -1,15 +1,19 @@
 // Non-Action Data Blocks
 export interface Company {
-    symbol: string,
-    name: string
+  symbol: string,
+  name: string
 }
 
 export interface Graph {
-    index: number
-    graphId: string,
-    company: Company,
-    dataset: Array<number>,
-    timeInterval: string
+  index: number
+  graphId: string,
+  company: Company,
+  dataset: Array<number>,
+  labels: Array<string>
+  timeInterval?: string
 }
 
-
+export interface DataPoints {
+  prices: Array<number>,
+  times: Array<string>
+}
