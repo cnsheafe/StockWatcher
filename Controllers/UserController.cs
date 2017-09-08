@@ -24,38 +24,37 @@ namespace StockWatcher.Controllers
     public class UserController : Controller
     {
         private ManageUser manageUser;
-        public UserController(ManageUser _manageUser)
+        private JWTService jwtService;
+        public UserController(ManageUser _manageUser, JWTService _jwtService)
         {
             manageUser = _manageUser;
+            jwtService = _jwtService;
         }
         private string UserSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
         private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
         [HttpPost]
-        public void CreateUser([FromForm]User user)
+        public IActionResult CreateUser([FromForm]User user)
         {
-            var responseMsg = "";
+            Console.WriteLine(Request.Headers.Values);
             Response.StatusCode = 201;
             if (ModelState.IsValid)
             {
                 if (manageUser.AddUser(user))
-                    responseMsg = "Successfully created an User";
+                    Response.StatusCode = 201;
                 else
                 {
-                    // Response.StatusCode = 409;
-                    Response.Redirect("/signup");
-                    responseMsg = "User already exists";
+                    Response.StatusCode = 409;
                 }
             }
             else
             {
-                // Response.StatusCode = 400;
-                Response.Redirect("/signup");
-                responseMsg = "Incorrect input. Fix and try again.";
+                Response.StatusCode = 400;
             }
-            Response.Redirect("/");
-            // return Json(responseMsg);
+
+
+            return Json(jwtService.CreateToken(user.Username));
         }
 
         [HttpDelete]
