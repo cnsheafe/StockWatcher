@@ -13,7 +13,6 @@ namespace StockWatcher.Model.Schemas
         public string Username { get; set; }
 
         [Required]
-        [StringLength(30)]
         public string Password { get; set; }
 
         [Required]
