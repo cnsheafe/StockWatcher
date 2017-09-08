@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -17,15 +18,20 @@ namespace StockWatcher.Model.Services
     public class ManageUser
     {
         private StockDbContext context;
-        public ManageUser(StockDbContext _StockDbContext)
+        private IDataProtector passwordProtector;
+        private IDataProtector phoneProtector;
+        public ManageUser(StockDbContext _StockDbContext, IDataProtectionProvider provider)
         {
             context = _StockDbContext;
+            passwordProtector = provider.CreateProtector("password");
+            phoneProtector = provider.CreateProtector("phone");
         }
         public bool AddUser(User user)
         {
             bool success = true;
             try
             {
+                user.Password = passwordProtector.Protect(user.Password);
                 context.Users.Add(user);
                 context.SaveChanges();
             }
@@ -46,6 +52,26 @@ namespace StockWatcher.Model.Services
                         .Single();
                     BindUser(selectUser);
                 }
+            }
+            return success;
+        }
+
+        public bool LoginUser(Login login)
+        {
+            bool success = false;
+            try
+            {
+                var username = context.Users
+                    .Single(u => (u.Username == login.Username) && (passwordProtector.Unprotect(u.Password) == login.Password))
+                    .Username;
+                success = true;
+            }
+            catch (DbUpdateException dbException)
+            {
+                var exception = (Npgsql.PostgresException)dbException.InnerException;
+                string SqlCode = exception.SqlState;
+                Console.WriteLine(SqlCode);
+                success = string.CompareOrdinal(SqlCode, 1, "01P01", 1, length: 1) < 0;
             }
             return success;
         }

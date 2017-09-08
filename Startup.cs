@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
@@ -46,6 +48,8 @@ namespace StockWatcher
             services.AddDbContext<StockDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostGresConnection"))
             );
+
+            services.AddDataProtection();
 
             services.AddTransient<ManageUser>();
             services.AddTransient<SmsService>();
