@@ -42,7 +42,10 @@ namespace StockWatcher.Controllers
             if (ModelState.IsValid)
             {
                 if (manageUser.AddUser(user))
+                {
                     Response.StatusCode = 201;
+                    return Json(jwtService.CreateToken(user.Username));
+                }
                 else
                 {
                     Response.StatusCode = 409;
@@ -53,8 +56,14 @@ namespace StockWatcher.Controllers
                 Response.StatusCode = 400;
             }
 
+            return Json("");
+            
+        }
 
-            return Json(jwtService.CreateToken(user.Username));
+        [HttpPost]
+        public IActionResult LoginUser([FromForm]User user)
+        {
+            return Json("");
         }
 
         [HttpDelete]
