@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export class Signup extends React.Component {
 
-  sendSignupRequest(event) {
+  sendSignupRequest(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(document.getElementById("signup-form") as HTMLFormElement);
     const headers = new Headers();
@@ -26,7 +26,7 @@ export class Signup extends React.Component {
   }
 
   render() {
-    let signupForm: JSX.Element =
+    return(
       <div>
         <h2>Signup</h2>
         <form id="signup-form" onSubmit={event => this.sendSignupRequest(event)}>
@@ -37,7 +37,6 @@ export class Signup extends React.Component {
         </form>
         <Link to="/login">Already have an account? Login!</Link>
       </div>
-      ;
-    return signupForm;
+    );
   }
 }
