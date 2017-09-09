@@ -61,8 +61,23 @@ namespace StockWatcher.Controllers
         }
 
         [HttpPost]
-        public IActionResult LoginUser([FromForm]User user)
+        public IActionResult LoginUser([FromForm]Login login)
         {
+            if (ModelState.IsValid) {
+                if(manageUser.LoginUser(login)) 
+                {
+                    Response.StatusCode = 201;
+                    return Json(jwtService.CreateToken(login.Username));
+                }
+                else
+                {
+                    Response.StatusCode = 409;
+                }
+            }
+            else
+            {
+                Response.StatusCode = 400;
+            }
             return Json("");
         }
 
