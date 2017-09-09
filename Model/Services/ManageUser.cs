@@ -61,9 +61,9 @@ namespace StockWatcher.Model.Services
             bool success = false;
             try
             {
-                var username = context.Users
-                    .Single(u => (u.Username == login.Username) && (passwordProtector.Unprotect(u.Password) == login.Password))
-                    .Username;
+                User username = context.Users
+                    .Where(u => (u.Username == login.Username) && (passwordProtector.Unprotect(u.Password) == login.Password))
+                    .Single();
                 success = true;
             }
             catch (DbUpdateException dbException)
@@ -72,6 +72,11 @@ namespace StockWatcher.Model.Services
                 string SqlCode = exception.SqlState;
                 Console.WriteLine(SqlCode);
                 success = string.CompareOrdinal(SqlCode, 1, "01P01", 1, length: 1) < 0;
+            }
+            catch (System.InvalidOperationException exception)
+            {
+                Console.WriteLine("Message: {0}", exception.Message);
+                Console.WriteLine("Source: {0}", exception.Source);
             }
             return success;
         }
