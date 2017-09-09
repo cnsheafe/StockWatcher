@@ -1,9 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace StockWatcher.Model.Schemas
 {
-    public interface Login
+    public class Login
     {
-        string Username { get; }
-        string Password { get; }
+
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
 
     }
 }
