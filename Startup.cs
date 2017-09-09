@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
@@ -20,16 +22,16 @@ namespace StockWatcher
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            // Configuration = configuration;
+            Configuration = configuration;
 
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            // var builder = new ConfigurationBuilder()
+            //     .SetBasePath(env.ContentRootPath)
+            //     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            //     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+            //     .AddEnvironmentVariables();
+            // Configuration = builder.Build();
 
         }
 
@@ -42,13 +44,19 @@ namespace StockWatcher
             services.AddHangfire(config =>
                 config.UsePostgreSqlStorage(Configuration.GetConnectionString("HangfireConnection"))
             );
+
             services.AddDbContext<StockDbContext>(options =>
-                options.UseNpgsql(Environment.GetEnvironmentVariable("SWConnString"))
+                options.UseNpgsql(Configuration.GetConnectionString("PostGresConnection"))
             );
+
+            services.AddDataProtection();
 
             services.AddTransient<ManageUser>();
             services.AddTransient<SmsService>();
             services.AddTransient<StockRequestService>();
+            services.AddTransient<QueryCompanyService>();
+            services.AddTransient<AlphaVantageService>();
+            services.AddTransient<JWTService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

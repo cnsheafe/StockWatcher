@@ -18,44 +18,71 @@ using StockWatcher.Model;
 using StockWatcher.Model.Schemas;
 using StockWatcher.Model.Services;
 
-namespace StockWatcher.Controllers {
+namespace StockWatcher.Controllers
+{
 
-    public class UserController : Controller 
+    public class UserController : Controller
     {
         private ManageUser manageUser;
-        public UserController(ManageUser _manageUser) 
+        private JWTService jwtService;
+        public UserController(ManageUser _manageUser, JWTService _jwtService)
         {
             manageUser = _manageUser;
+            jwtService = _jwtService;
         }
         private string UserSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
         private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
         [HttpPost]
-        public ActionResult CreateUser([FromBody]User user) 
+        public IActionResult CreateUser([FromForm]User user)
         {
-            var responseMsg = "";
+            Console.WriteLine(Request.Headers.Values);
             Response.StatusCode = 201;
-            if (ModelState.IsValid) 
+            if (ModelState.IsValid)
             {
-                if (manageUser.AddUser(user)) 
-                    responseMsg = "Successfully created an User";
+                if (manageUser.AddUser(user))
+                {
+                    Response.StatusCode = 201;
+                    return Json(jwtService.CreateToken(user.Username));
+                }
                 else
                 {
                     Response.StatusCode = 409;
-                    responseMsg = "User already exists";
                 }
             }
-            else 
+            else
             {
                 Response.StatusCode = 400;
-                responseMsg = "Incorrect input. Fix and try again.";
             }
-            return Json(responseMsg);
+
+            return Json("");
+            
+        }
+
+        [HttpPost]
+        public IActionResult LoginUser([FromForm]Login login)
+        {
+            if (ModelState.IsValid) {
+                if(manageUser.LoginUser(login)) 
+                {
+                    Response.StatusCode = 201;
+                    return Json(jwtService.CreateToken(login.Username));
+                }
+                else
+                {
+                    Response.StatusCode = 409;
+                }
+            }
+            else
+            {
+                Response.StatusCode = 400;
+            }
+            return Json("");
         }
 
         [HttpDelete]
-        public void RemoveUser([FromBody]User user) 
+        public void RemoveUser([FromBody]User user)
         {
             Response.StatusCode = 204;
             if (ModelState.IsValid)

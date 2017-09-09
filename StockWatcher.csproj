@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-
-<ItemGroup>
+  <ItemGroup>
     <PackageReference Include="hangfire" Version="1.6.14" />
     <PackageReference Include="hangfire.aspnetcore" Version="1.6.14" />
     <PackageReference Include="hangfire.postgresql" Version="1.4.8.1" />
+    <PackageReference Include="jose-jwt" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
     <PackageReference Include="npgsql" Version="3.2.5" />
@@ -20,5 +19,4 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.0-beta3-build3705" />
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.Dotnet" Version="2.0.0" />
   </ItemGroup>
-
 </Project>

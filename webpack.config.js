@@ -2,9 +2,10 @@ const path = require("path");
 const appConfig = require("config-tsx");
 const CheckerPlugin = require("awesome-typescript-loader").CheckerPlugin;
 const merge = require("webpack-merge");
+const webpack = require("webpack");
 
 const options = {
-    "client-root": "Client",
+    "client-root": "ClientApp",
     "input-dir": path.posix.normalize(`${__dirname}/ClientApp/`),
     "entry-file": path.posix.normalize(`${__dirname}/ClientApp/boot-server.tsx`),
     "output-dir": path.posix.normalize(`${__dirname}/ClientApp/dist`)
@@ -23,7 +24,7 @@ module.exports = env => {
             extensions: [".js", ".jsx", ".ts", ".tsx"]
         },
         output: {
-            filename: "[name].js",
+            filename: "[name].bundle.js",
             publicPath: "dist/"
         },
         module: {
@@ -68,7 +69,7 @@ module.exports = env => {
             mainFields: ["main"]
         },
         entry: {
-            "main-server": appSettings["entry-file"]
+            "server": appSettings["entry-file"]
         },
         output: {
             libraryTarget: "commonjs",
@@ -78,33 +79,21 @@ module.exports = env => {
         devtool: "inline-source-map"
     });
 
-    return serverConfig;
-    // entry: appSettings["entry-file"],
-    // output: {
-    //     path: appSettings["output-dir"],
-    //     publicPath: "/dist/",
-    //     filename: "main-server.js"
-    // },
-    // ,
-    // plugins: [new CheckerPlugin()],
-    // resolve: {
-    //     modules: [
-    //         "node_modules",
-    //         appSettings["input-dir"]
-    //     ],
-    //     extensions: [".js", ".jsx", ".json", ".ts", ".tsx"]
-    // },
-    // devtool: "source-map",
-    // // devServer: {
-    // //     contentBase: appSettings["output-dir"],
-    // //     compress: true,
-    // //     port: 3000,
-    // //     historyApiFallback: true
-    // // },
-    // context: __dirname,
-    // externals: {
-    //     react: "React",
-    //     "react-dom": "ReactDOM"
-    // },
-    // target: "node"
-}
+    const clientBundleOutputDir = path.posix.resolve(__dirname, "./wwwroot/dist");
+    const clientConfig = merge(sharedConfig(), {
+        entry: {
+            "client": path.posix.join(appSettings["input-dir"],"boot-client.tsx")
+        },
+        output: {
+            path: clientBundleOutputDir
+        },
+        plugins: [
+            new webpack.SourceMapDevToolPlugin({
+                filename: '[file].map', // Remove this line if you prefer inline source maps
+                moduleFilenameTemplate: path.relative(clientBundleOutputDir, '[resourcePath]') // Point sourcemap entries to the original file locations on disk
+            })
+        ]
+    });
+
+    return [clientConfig, serverConfig];
+ }

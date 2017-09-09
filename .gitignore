@@ -10,7 +10,8 @@
 *.sln.docstates
 
 .awcache
-
+tsconfig.json
+*.csv
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

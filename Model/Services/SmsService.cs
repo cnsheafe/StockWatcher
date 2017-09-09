@@ -10,24 +10,24 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model.Services
 {
-    public class SmsService 
+    public class SmsService
     {
-        private string accountSid = 
+        private string accountSid =
             Environment.GetEnvironmentVariable(
                 "TwilioAcctSid"
             );
-        private string authToken = 
+        private string authToken =
             Environment.GetEnvironmentVariable(
                 "TwilioAuthToken"
             );
-        private string serviceSid = 
+        private string serviceSid =
             Environment.GetEnvironmentVariable(
                 "TwilioServiceSid"
             );
 
         private StockDbContext context;
 
-        public SmsService(StockDbContext _context) 
+        public SmsService(StockDbContext _context)
         {
             context = _context;
         }
@@ -41,14 +41,14 @@ namespace StockWatcher.Model.Services
         /// <param name="openPrice">
         /// The latest stock price.
         /// </param>
-        public NotificationResource NotifyUsers(Stock stock, double openPrice) 
+        public NotificationResource NotifyUsers(Stock stock, double openPrice)
         {
             var userIdentities = new List<string>();
             List<Stock> matchingStocks = context.Stocks
                 .Where(s => s.RequestId == stock.RequestId)
                 .ToList();
 
-            foreach (var match in matchingStocks) 
+            foreach (var match in matchingStocks)
             {
                 var matchingUser = context.Users
                     .Single(u => u.Username == match.Username);
