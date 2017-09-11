@@ -1,0 +1,20 @@
+@import "grid";
+@import "colors";
+
+.search {
+  @extend .container;
+  margin-top: 10vh;
+  flex-direction: column;
+
+  .search-label {
+    margin-left: 10vw;
+  }
+
+  .search-input {
+    border: 3px solid $accent-color;
+    border-radius: 5px;
+    margin: auto;
+    width: 80vw;
+  }
+   
+}
