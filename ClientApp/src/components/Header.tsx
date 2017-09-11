@@ -12,19 +12,22 @@ class Header extends React.Component<ILoginProps> {
 
   render() {
     let header: JSX.Element;
+
     if (this.props.loggedIn) {
       header =
-        <div>
-          <h1>StockWatcher</h1>
-          <button id="account">Account</button>
+        <div className="header" role="header">
+          <h1 className="header-title">StockWatcher</h1>
+          <button className="header-account">Account</button>
         </div>
     }
     else {
       header =
-        <div>
-          <h1>StockWatcher</h1>
-          <Link to="/signup">Signup</Link>
-          <Link to="/login">Login</Link>
+        <div className="header" role="header">
+          <h1 className="header-title">StockWatcher</h1>
+          <span className="header-link-group">
+            <Link className="header-link" to="/signup">Signup</Link>
+            <Link className="header-link" to="/login">Login</Link>
+          </span>
         </div>;
     }
 
