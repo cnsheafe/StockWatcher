@@ -30,12 +30,13 @@ class Search extends React.Component<SearchProps, {}> {
       </li>
     );
     return (
-      <div>
-        <input id="search-companies" type="text" />
+      <section className="search">
+        <label htmlFor="search-companies" className="search-label">Search</label>
+        <input id="search-companies" type="text" className="search-input" placeholder="Type in an Stock Symbol (e.g. MSFT)"/>
         <ul id="search-suggestions" onClick={e => this.suggestionHandler(e)}>
           {suggestions}
         </ul>
-      </div>
+      </section>
     );
   }
 
