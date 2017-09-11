@@ -6,10 +6,10 @@ import Graphs from "./Graphs";
 export class Body extends React.Component {
   render() {
     let body =
-      <div>
+      <section>
         <Search />
         <Graphs />
-      </div>;
+      </section>;
     return body;
   }
 }

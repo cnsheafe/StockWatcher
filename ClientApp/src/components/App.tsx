@@ -5,10 +5,10 @@ import { Body } from "./Body";
 export class App extends React.Component {
   render() {
     return (
-      <div>
+      <main>
         <Header />
         <Body />
-      </div>
+      </main>
     );
   }
 }
