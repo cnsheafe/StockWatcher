@@ -6,8 +6,8 @@
   background-color: $header-color;
   flex-direction: column;
   justify-content: flex-start;
-
-  @media screen and (min-width: $break-point) {
+  // margin-bottom: 30px;
+  @media screen and (min-width: $medium) {
     flex-direction: row;
   }
 
@@ -16,7 +16,7 @@
     font-size: 3.8vw;
     margin: 10px auto 10px;
     color: $accent-color;
-    @media screen and (min-width: $break-point) {
+    @media screen and (min-width: $medium) {
       font-size: 3.5vw;
       margin: 10px 0 10px 10px;
     }
@@ -24,8 +24,9 @@
 
   .header-link-group {
     margin: 10px auto 10px;
+    margin-bottom: 25px;
     align-self: center;
-    @media screen and (min-width: $break-point) {
+    @media screen and (min-width: $medium) {
       margin: 10px 10px 10px auto;
     }
   }
@@ -41,7 +42,7 @@
     margin: 6px 6px 6px 6px;
     // border: 5px outset #FF9100;
     border-radius: 5px;
-    @media screen and (min-width: $break-point) {
+    @media screen and (min-width: $medium) {
     }
   }
 }
