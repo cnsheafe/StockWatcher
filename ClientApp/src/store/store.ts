@@ -48,7 +48,8 @@ function reducer(state: IState, action: ValidAction): IState {
           graphs: [
             ...state.graphs,
             newGraph
-          ]
+          ],
+          searchResults: []
         });
 
     default:
