@@ -14,12 +14,14 @@ class Graphs extends React.Component<GraphsProps, {}> {
   render() {
     const graphs = this.props.graphs.map<JSX.Element>((graph: Graph, index: number) => {
       return (
-        <li key={index}><canvas id={graph.graphId}></canvas></li>
+        <li key={index} className="graphs-list-item">
+            <canvas id={graph.graphId}></canvas>
+        </li>
       );
     });
 
     return (
-      <ul id="graphs">
+      <ul id="graphs" className={graphs.length > 0 ? "graphs-list" : "hide"}>
         {graphs}
       </ul>
     );
@@ -28,17 +30,34 @@ class Graphs extends React.Component<GraphsProps, {}> {
   componentDidUpdate() {
     this.props.graphs.forEach(graph => {
       let context = document.getElementById(graph.graphId) as HTMLCanvasElement;
-      let config: Chart.ChartConfiguration = ChartConfigurationBuilder("line", graph.dataset, graph.labels);
+      let labels = graph.labels.map<string>((label, index) => {
+        let tmp = label.split(" ")[1];
+        return tmp.substring(0, tmp.length-3);
+      });
+      let config: Chart.ChartConfiguration = ChartDataConfigurationBuilder("line", graph.dataset, labels);
 
+      config.options = {
+        maintainAspectRatio: false
+      };
+
+      config.options.title = {
+        display: true,
+        fontFamily: "'Lato', sans-serif",
+        text: graph.company.name
+      };
       let chart = new Chart(context, config);
     })
   }
 }
 
-function ChartConfigurationBuilder(type: Chart.ChartType, dataPoints: Array<number>, labels: Array<string>): Chart.ChartConfiguration {
+function ChartDataConfigurationBuilder(type: Chart.ChartType, dataPoints: Array<number>, labels: Array<string>): Chart.ChartConfiguration {
 
   let chartDataSets: Chart.ChartDataSets[] = [{
-    data: dataPoints
+    data: dataPoints,
+    label: "Stock Price in USD",
+    backgroundColor: "#00BCD4",
+    borderColor: "#0097A7",
+    borderWidth: 5
   }];
 
   let chartData: Chart.ChartData = {
@@ -49,7 +68,7 @@ function ChartConfigurationBuilder(type: Chart.ChartType, dataPoints: Array<numb
   return {
     type: type,
     data: chartData
-  };
+  } as Chart.ChartConfiguration;
 }
 
 function mapStateToProps(state: IState) {
