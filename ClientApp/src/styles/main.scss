@@ -1,8 +1,13 @@
 @import "grid";
+@import "colors";
 @import "header";
 @import "search";
-@import "colors";
+@import "graphs";
 
-#react-app {
+body {
     background-color: $background-color;
+}
+
+.hide {
+    visibility: hidden;
 }
