@@ -1,4 +1,7 @@
-$break-point: 768px;
+$small: 576px;
+$medium: 768px;
+$large: 992px;
+
 .container {
     display: flex;
     align-items: baseline;
