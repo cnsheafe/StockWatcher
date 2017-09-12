@@ -13,11 +13,14 @@ interface SearchProps {
 class Search extends React.Component<SearchProps, {}> {
 
   suggestionHandler(event: React.MouseEvent<HTMLUListElement>) {
-    let element = event.target as HTMLElement;
+    let target = event.target as HTMLElement;
+    let element = target.className === "search-suggestions-item" ? target : target.parentElement;
+
     const company: Company = {
-      name: element.dataset.name,
+      name: element.dataset.company,
       symbol: element.dataset.symbol
     }
+    console.log(company);
     store.dispatch(addGraphAsync(company));
   }
   render() {
@@ -25,15 +28,22 @@ class Search extends React.Component<SearchProps, {}> {
       <li 
         key={index} 
         data-symbol={company.symbol}
-        data-company-name={company.name}>
-        {company.symbol}: {company.name}
+        data-company={company.name}
+        className="search-suggestions-item">
+          <i className="material-icons purple700">add_circle</i>
+          <p>{company.symbol}: {company.name}</p>
       </li>
     );
+
     return (
       <section className="search">
-        <label htmlFor="search-companies" className="search-label">Search</label>
+        <label htmlFor="search-companies" className="search-label">Search Stocks</label>
         <input id="search-companies" type="text" className="search-input" placeholder="Type in an Stock Symbol (e.g. MSFT)"/>
-        <ul id="search-suggestions" onClick={e => this.suggestionHandler(e)}>
+        <h2 className={this.props.searchResults.length > 0 ? "suggestions-title" : "hide"}>Possible Matches</h2>
+        <ul 
+          id="search-suggestions" 
+          onClick={e => this.suggestionHandler(e)} 
+          className={this.props.searchResults.length > 0 ? "search-suggestions-list" : "hide"}>
           {suggestions}
         </ul>
       </section>
