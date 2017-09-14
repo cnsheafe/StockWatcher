@@ -8,7 +8,9 @@ import { IState } from "./store";
 export const SEARCH = "SEARCH_RESULT";
 export const RES_INDEX = "SEARCH_RESULT_INDEX";
 export const LOGIN = "LOGGED_IN";
-export const GRAPH = "ADD_GRAPH";
+export const ADD_GRAPH = "ADD_GRAPH";
+export const REM_GRAPH = "REMOVE_GRAPH";
+
 // Action Interfaces
 export interface LoginAction { type: "LOGGED_IN" }
 
@@ -29,7 +31,12 @@ export interface AddGraph {
   labels: Array<string>
 }
 
-export type ValidAction = SearchResult & LoginAction & CompanyFromIndex & AddGraph;
+export interface RemoveGraph {
+  type: "REMOVE_GRAPH",
+  graphId: string
+}
+
+export type ValidAction = SearchResult & LoginAction & CompanyFromIndex & AddGraph & RemoveGraph;
 
 // Action for updating state with list of matching company names from database
 // Used on Search.tsx
@@ -41,7 +48,6 @@ export const ListSearchResults: ActionCreator<SearchResult> =
     }
   }
 // Action for Adding a Graph
-
 export const addGraphAsync = 
   (company: Company) => {
 
@@ -65,7 +71,7 @@ export const addGraphAsync =
           }
 
           dispatch<AddGraph>({
-            type: GRAPH,
+            type: ADD_GRAPH,
             company: company,
             dataPoints: dataPoints,
             labels: labels
@@ -74,3 +80,10 @@ export const addGraphAsync =
     }
   }
 
+
+export const removeGraph: ActionCreator<RemoveGraph> = (graphId: string) => {
+  return {
+    type: REM_GRAPH,
+    graphId: graphId
+  }
+}
