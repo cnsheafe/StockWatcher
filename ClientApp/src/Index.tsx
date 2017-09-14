@@ -6,8 +6,7 @@ import { BrowserRouter, Route, Switch, StaticRouter } from "react-router-dom";
 import { BootFuncParams } from "aspnet-prerendering";
 
 import { App } from "./components/App";
-import { Signup } from "./components/Signup";
-import { Login } from "./components/Login";
+
 import store from "./store/store";
 
 
@@ -23,8 +22,6 @@ export function Index(isForServer: boolean, params?: BootFuncParams): JSX.Elemen
         <StaticRouter basename={baseUrl} context={{}} location={params.url}>
           <Switch>
             <Route exact path="/" component={App} />
-            <Route path="/signup" component={Signup} />
-            <Route path="/login" component={Login} />
           </Switch>
         </StaticRouter>
       </Provider>
@@ -37,8 +34,6 @@ export function Index(isForServer: boolean, params?: BootFuncParams): JSX.Elemen
         <BrowserRouter>
           <Switch>
             <Route exact path="/" component={App} />
-            <Route path="/signup" component={Signup} />
-            <Route path="/login" component={Login} />
           </Switch>
         </BrowserRouter>
       </Provider>

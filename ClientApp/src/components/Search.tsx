@@ -3,7 +3,7 @@ import * as Rx from "rxjs";
 import { connect } from "react-redux";
 import store from "../store/store";
 import { IState } from "../store/store";
-import { Company } from "../store/data-blocks";
+import { Company } from "../store/schema";
 import { ListSearchResults,  addGraphAsync } from "../store/actions";
 
 interface SearchProps {

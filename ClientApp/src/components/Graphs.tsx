@@ -4,12 +4,11 @@ import { connect } from "react-redux";
 
 import { removeGraph } from "../store/actions";
 import store, { IState } from "../store/store";
-import { Graph, DataPoints } from "../store/data-blocks";
+import { Graph, DataPoints } from "../store/schema";
 
 
 interface GraphsProps {
-  graphs: Array<Graph>,
-  loggedIn: boolean
+  graphs: Array<Graph>
 }
 
 
@@ -31,7 +30,7 @@ class Graphs extends React.Component<GraphsProps, {}> {
               <i className="material-icons red-remove700">remove_circle</i>
               <b className="remove-text">Remove</b>  
             </button>
-            <span className={ this.props.loggedIn ? "watch" : "hide"}>
+            <span className="watch">
               <button onClick={e => {}}>
                 <i className="material-icons purple-watch700">remove_red_eye</i>
                 <b>Watch</b>
