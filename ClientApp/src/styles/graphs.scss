@@ -17,11 +17,52 @@
   border-bottom: 2px solid gray;
   position: relative;
   height: 60vh;
+  padding-bottom: 40px;
+
   @media screen and (min-width: $small) {
     height: 50vh;
   }
 
   @media screen and (min-width: $medium) {
     height: 40vh;
+  }
+
+  .material-icons.red-remove700 {
+    color: #FF1744;
+  }
+
+  .material-icons.purple-watch700 {
+    color: #AA00FF;
+  }
+
+  
+
+  .canvas-container {
+    position: relative;
+    height: 60vh;
+    @media screen and (min-width: $small) {
+      height: 50vh;
+    }
+    @media screen and (min-width: $medium) {
+      height: 40vh;
+    }
+  }
+
+  .graph-controls {
+    @extend .container;
+    flex-direction: row;
+    align-items: center;
+    
+    .remove, .watch {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-left: 15px;
+      cursor: pointer;
+    }
+
+    .material-icons.purple-watch700, .material-icons.red-remove700 {
+      margin-right: 5px;
+    }
   }
 }
