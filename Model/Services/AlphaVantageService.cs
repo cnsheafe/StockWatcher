@@ -25,7 +25,7 @@ namespace StockWatcher.Model.Services
 
                 // Describes URI query terms for Alphavantage API
                 var queryTerms = new StringBuilder();
-                queryTerms.Append("function=time_series_intraday&");
+                queryTerms.Append("function=time_series_daily&");
                 queryTerms.Append($"symbol={StockSymbol}&");
                 queryTerms.Append("interval=1min&");
                 queryTerms.Append($"apikey={AV_KEY}");
@@ -48,7 +48,7 @@ namespace StockWatcher.Model.Services
                     Console.WriteLine($"Message: {err.Message}");
                 }
 
-                var parsedResponse = JObject.Parse(responseBody)["Time Series (1min)"].Value<JObject>();
+                var parsedResponse = JObject.Parse(responseBody)["Time Series (Daily)"].Value<JObject>();
                 var timestamps = parsedResponse.Properties().Select(p => p.Name).ToArray();
 
                 var priceHistory = parsedResponse.Children()
