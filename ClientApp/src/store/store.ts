@@ -13,7 +13,8 @@ import {
   SEARCH,
   RES_INDEX,
   LOGIN,
-  GRAPH,
+  ADD_GRAPH,
+  REM_GRAPH,
   ValidAction
 } from "./actions";
 
@@ -32,7 +33,7 @@ function reducer(state: IState, action: ValidAction): IState {
       return Object.assign({}, state, { searchResults: action.results });
     case LOGIN:
       return Object.assign({}, state, { loggedIn: !state.loggedIn });
-    case GRAPH:
+    case ADD_GRAPH:
       const count: number = state.graphs.length;
       const index: number = count > 0 ? state.graphs[count - 1].index + 1 : 0;
       const newGraph: Graph = {
@@ -44,14 +45,25 @@ function reducer(state: IState, action: ValidAction): IState {
       }
 
       return Object.assign({}, state,
-        {
-          graphs: [
-            ...state.graphs,
-            newGraph
-          ],
-          searchResults: []
-        });
-
+      {
+        graphs: [
+          ...state.graphs,
+          newGraph
+        ],
+        searchResults: []
+      });
+    case REM_GRAPH:
+      const indexToRemove = state.graphs.findIndex(elm => {
+        return elm.graphId === action.graphId;
+      });
+      console.log(indexToRemove);
+      const newGraphList = [...state.graphs];
+      newGraphList.splice(indexToRemove, 1);
+      console.log(newGraphList);
+      return Object.assign({}, state,
+      {
+        graphs: newGraphList
+      });
     default:
       return state;
   }
