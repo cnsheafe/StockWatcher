@@ -8,7 +8,7 @@ import {
 import thunk from "redux-thunk";
 import * as Rx from "rxjs/Rx";
 
-import { Graph, Company } from "./data-blocks";
+import { Graph, Company } from "./schema";
 import {
   SEARCH,
   RES_INDEX,

@@ -1,7 +1,7 @@
 import { ActionCreator, Dispatch } from "redux";
 import thunk, { ThunkAction } from "redux-thunk";
 
-import { Company, Graph } from "./data-blocks";
+import { Company, Graph } from "./schema";
 import { IState } from "./store";
 
 // Action Commands
