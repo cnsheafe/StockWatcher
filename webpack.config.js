@@ -6,7 +6,7 @@ const webpack = require("webpack");
 
 const options = {
   "client-root": "ClientApp",
-  "input-dir": path.posix.normalize(`${__dirname}/ClientApp/`),
+  "input-dir": path.normalize(`${__dirname}/ClientApp/`),
   "entry-file": path.posix.normalize(`${__dirname}/ClientApp/boot-server.tsx`),
   "output-dir": path.posix.normalize(`${__dirname}/ClientApp/dist`)
 };
@@ -79,7 +79,7 @@ module.exports = env => {
     devtool: "inline-source-map"
   });
 
-  const clientBundleOutputDir = path.posix.resolve(__dirname, "./wwwroot/dist");
+  const clientBundleOutputDir = path.posix.normalize(__dirname, "./wwwroot/dist");
   const clientConfig = merge(sharedConfig(), {
     entry: {
       "client": path.posix.join(appSettings["input-dir"], "boot-client.tsx")
