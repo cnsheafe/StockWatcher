@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Chart from "chart.js";
 import { connect } from "react-redux";
 
-import { removeGraph } from "../store/actions";
+import { removeGraph, toggleModalDisplay } from "../store/actions";
 import store, { IState } from "../store/store";
 import { Graph, DataPoints } from "../store/schema";
 
@@ -31,7 +31,7 @@ class Graphs extends React.Component<GraphsProps, {}> {
               <b className="remove-text">Remove</b>  
             </button>
             <span className="watch">
-              <button onClick={e => {}}>
+              <button onClick={e => {store.dispatch(toggleModalDisplay())}}>
                 <i className="material-icons purple-watch700">remove_red_eye</i>
                 <b>Watch</b>
               </button>
