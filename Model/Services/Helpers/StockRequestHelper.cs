@@ -8,9 +8,9 @@ using Twilio.Types;
 
 using StockWatcher.Model.Schemas;
 
-namespace StockWatcher.Model.Services
+namespace StockWatcher.Model.Services.Helpers
 {
-    public class SmsService
+    public class StockRequestHelper
     {
         private string accountSid =
             Environment.GetEnvironmentVariable(
@@ -27,7 +27,7 @@ namespace StockWatcher.Model.Services
 
         private StockDbContext context;
 
-        public SmsService(StockDbContext _context)
+        public StockRequestHelper(StockDbContext _context)
         {
             context = _context;
         }
@@ -44,27 +44,38 @@ namespace StockWatcher.Model.Services
         public NotificationResource NotifyUsers(Stock stock, double openPrice)
         {
             var userIdentities = new List<string>();
-            List<Stock> matchingStocks = context.Stocks
+            List<RequestRecord> matchingStocks = context.Requests
                 .Where(s => s.RequestId == stock.RequestId)
                 .ToList();
 
             foreach (var match in matchingStocks)
             {
-                var matchingUser = context.Users
-                    .Single(u => u.Username == match.Username);
-                userIdentities.Add(matchingUser.Uuid);
+                userIdentities.Add(match.TwilioBinding);
             }
 
             TwilioClient.Init(accountSid, authToken);
             NotificationResource notification = NotificationResource.Create(
                 serviceSid,
                 identity: userIdentities,
-                body: $"${stock.Equity.ToUpper()} has exceeded target price of {stock.Price} and has reached price ${openPrice}"
+                body: $"${stock.Symbol.ToUpper()} has exceeded target price of {stock.Price} and has reached price ${openPrice}"
             );
 
             return notification;
         }
-
+        public BindingResource BindUser(string uuid, string phoneNumber)
+        {
+            TwilioClient.Init(
+                Environment.GetEnvironmentVariable("TwilioAcctSid"),
+                Environment.GetEnvironmentVariable("TwilioAuthToken")
+            );
+            var binding = BindingResource.Create(
+                Environment.GetEnvironmentVariable("TwilioServiceSid"),
+                identity: uuid,
+                bindingType: BindingResource.BindingTypeEnum.Sms,
+                address: phoneNumber
+            );
+            return binding;
+        }
 
     }
 }

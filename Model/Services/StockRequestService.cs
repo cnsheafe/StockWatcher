@@ -16,15 +16,18 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 using StockWatcher.Model.Schemas;
+using StockWatcher.Model.Services.Helpers;
 
 namespace StockWatcher.Model.Services
 {
     public class StockRequestService
     {
         private readonly StockDbContext context;
+        private StockRequestHelper helper;
         public StockRequestService(StockDbContext _context)
         {
             context = _context;
+            helper = new StockRequestHelper(_context);
         }
         public bool AddRequest(Stock stock)
         {
@@ -32,7 +35,13 @@ namespace StockWatcher.Model.Services
 
             try
             {
-                context.Add(stock);
+                var request = new RequestRecord();
+                request.RequestId = stock.RequestId;
+                request.Price = stock.Price;
+                request.TwilioBinding = Guid.NewGuid().ToString();
+                helper.BindUser(request.TwilioBinding, stock.Phone);
+
+                context.Add(request);
                 context.SaveChanges();
             }
             catch (DbUpdateException dbException)
@@ -50,9 +59,9 @@ namespace StockWatcher.Model.Services
 
             try
             {
-                context.Stocks.RemoveRange(
-                    context.Stocks
-                        .Where(s => s.Username == stock.Username)
+                context.Requests.RemoveRange(
+                    context.Requests
+                        .Where(r => r.RequestId == stock.RequestId)
                 );
                 context.SaveChanges();
             }
@@ -74,9 +83,9 @@ namespace StockWatcher.Model.Services
 
                 // Describes URI query terms for Alphavantage API
                 var queryTerms = new StringBuilder();
-                queryTerms.Append("function=time_series_intraday&");
-                queryTerms.Append($"symbol={stock.Equity}&");
-                queryTerms.Append("interval=1min&");
+                queryTerms.Append("function=time_series_daily&");
+                queryTerms.Append($"symbol={stock.Symbol}&");
+                // queryTerms.Append("interval=1min&");
                 queryTerms.Append($"apikey={AV_KEY}");
 
                 var avUri = new UriBuilder();
@@ -100,7 +109,7 @@ namespace StockWatcher.Model.Services
                 // Find the Open price for the most recent stock price
                 JObject parsedPriceHistory = JObject.Parse(responseBody);
                 JToken latestPrices =
-                    (JToken)parsedPriceHistory["Time Series (1min)"]
+                    (JToken)parsedPriceHistory["Time Series (Daily)"]
                     .First
                     .First;
                 double openPrice = (double)latestPrices["1. open"];
@@ -112,7 +121,7 @@ namespace StockWatcher.Model.Services
                 // Sends notification to users if stock target price was met
                 if (openPrice > stock.Price)
                 {
-                    new SmsService(context).NotifyUsers(stock, openPrice);
+                    new StockRequestHelper(context).NotifyUsers(stock, openPrice);
                     RecurringJob.RemoveIfExists(jobId);
                     RemoveRequest(stock);
                     Console.WriteLine("Finished sending notification");
@@ -125,6 +134,5 @@ namespace StockWatcher.Model.Services
             DateTime endOfDay = DateTime.Today.AddHours(18);
             return DateTime.Compare(now, endOfDay) < 0 ? true : false;
         }
-
     }
 }
