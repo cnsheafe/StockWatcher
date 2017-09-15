@@ -35,8 +35,6 @@ class Graphs extends React.Component<GraphsProps, {}> {
                 <i className="material-icons purple-watch700">remove_red_eye</i>
                 <b>Watch</b>
               </button>
-              <label htmlFor="watch-input" className="watch-label">Alert At: $</label>
-              <input type="number" id="watch-input" className="watch-input" placeholder="5.37"/>
             </span>
 
           </div>
