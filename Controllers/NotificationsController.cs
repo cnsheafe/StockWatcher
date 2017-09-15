@@ -24,11 +24,9 @@ namespace StockWatcher.Controllers
         private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
         private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
 
-        private readonly SmsService smsService;
         private readonly StockRequestService requestService;
-        public NotificationsController(SmsService _smsService, StockRequestService _requestService)
+        public NotificationsController(StockRequestService _requestService)
         {
-            smsService = _smsService;
             requestService = _requestService;
         }
 
