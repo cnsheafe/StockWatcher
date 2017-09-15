@@ -5,7 +5,7 @@ import { createStore } from "redux";
 import { BrowserRouter, Route, Switch, StaticRouter } from "react-router-dom";
 import { BootFuncParams } from "aspnet-prerendering";
 
-import { App } from "./components/App";
+import App from "./components/App";
 
 import store from "./store/store";
 
