@@ -2,14 +2,17 @@ import * as React from "react";
 
 import Search from "./Search";
 import Graphs from "./Graphs";
+import Modal from "./Modal";
+
 
 export class Body extends React.Component {
   render() {
-    let body =
+    return(
       <section>
         <Search />
         <Graphs />
-      </section>;
-    return body;
+        <Modal />
+      </section>
+    );
   }
 }
