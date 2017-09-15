@@ -77,7 +77,7 @@ function reducer(state: IState, action: ValidAction): IState {
 const initialState: IState = {
   searchResults: [],
   graphs: [],
-  showModal: true
+  showModal: false
 };
 
 export default createStore(reducer, initialState, applyMiddleware(thunk));
