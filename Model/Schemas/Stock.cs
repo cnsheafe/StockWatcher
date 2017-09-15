@@ -1,24 +1,18 @@
-// Contains Model Schema for Stock
+// Contains Schema NotificationsController Input-Model
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StockWatcher.Model.Schemas
 {
-
-    [Table("StockRequests")]
     public class Stock
     {
-        [Key]
-        public int Id { get; set; }
 
         [Required]
-        [StringLength(30)]
-        public string Username { get; set; }
+        public string Symbol { get; set; }
 
         [Required]
-        [StringLength(4)]
-        public string Equity { get; set; }
+        [Phone]
+        public string Phone { get; set; }
 
         private double price;
 
@@ -30,9 +24,8 @@ namespace StockWatcher.Model.Schemas
         }
         public string RequestId
         {
-            get => Equity + price.ToString();
+            get => Symbol + price.ToString();
             set { }
         }
-
     }
 }

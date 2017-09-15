@@ -14,24 +14,10 @@ namespace StockWatcher.Model
             db.CloseConnection();
         }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Stock> Stocks { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<RequestRecord> Requests { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-                .HasIndex(user =>
-                    new
-                    {
-                        user.Phone,
-                        user.Username
-                    })
-                .IsUnique();
-
-            modelBuilder.Entity<User>()
-                .Property(user => user.Uuid)
-                .HasDefaultValueSql("uuid_generate_v4()");
-
             modelBuilder.Entity<Company>(entity =>
             {
                 entity.HasKey(e => e.Symbol);
@@ -40,6 +26,11 @@ namespace StockWatcher.Model
                 entity.Property(e => e.Name).HasColumnName("Name");
                 entity.Property(e => e.Adrtso).HasColumnName("ADRTSO");
                 entity.Property(e => e.IPOyear).HasColumnName("IPOyear");
+            });
+
+            modelBuilder.Entity<RequestRecord>(entity => {
+                entity.HasKey(e => e.Id);
+                entity.ToTable("requests");
             });
         }
     }
