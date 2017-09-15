@@ -11,19 +11,19 @@ import * as Rx from "rxjs/Rx";
 import { Graph, Company } from "./schema";
 import {
   SEARCH,
-  RES_INDEX,
-  LOGIN,
   ADD_GRAPH,
   REM_GRAPH,
+  TOGGLE_MODAL,
+  ADD_WATCH,
   ValidAction
 } from "./actions";
 
 
 // Shape of the App State
 export interface IState {
-  loggedIn: boolean,
   searchResults: Array<Company>,
-  graphs: Array<Graph>
+  graphs: Array<Graph>,
+  showModal: boolean
 }
 
 
@@ -31,8 +31,6 @@ function reducer(state: IState, action: ValidAction): IState {
   switch (action.type) {
     case SEARCH:
       return Object.assign({}, state, { searchResults: action.results });
-    case LOGIN:
-      return Object.assign({}, state, { loggedIn: !state.loggedIn });
     case ADD_GRAPH:
       const count: number = state.graphs.length;
       const index: number = count > 0 ? state.graphs[count - 1].index + 1 : 0;
@@ -52,27 +50,34 @@ function reducer(state: IState, action: ValidAction): IState {
         ],
         searchResults: []
       });
+
     case REM_GRAPH:
       const indexToRemove = state.graphs.findIndex(elm => {
         return elm.graphId === action.graphId;
       });
-      console.log(indexToRemove);
+
       const newGraphList = [...state.graphs];
       newGraphList.splice(indexToRemove, 1);
-      console.log(newGraphList);
+
       return Object.assign({}, state,
       {
         graphs: newGraphList
       });
+
+    case TOGGLE_MODAL || ADD_WATCH:
+      return Object.assign({}, state, 
+      {
+        showModal: !state.showModal
+      })
     default:
       return state;
   }
 }
 
 const initialState: IState = {
-  loggedIn: false,
   searchResults: [],
-  graphs: []
+  graphs: [],
+  showModal: true
 };
 
 export default createStore(reducer, initialState, applyMiddleware(thunk));

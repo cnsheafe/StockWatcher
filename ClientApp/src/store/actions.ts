@@ -6,10 +6,11 @@ import { IState } from "./store";
 
 // Action Commands
 export const SEARCH = "SEARCH_RESULT";
-export const RES_INDEX = "SEARCH_RESULT_INDEX";
-export const LOGIN = "LOGGED_IN";
+const LOGIN = "LOGGED_IN";
 export const ADD_GRAPH = "ADD_GRAPH";
 export const REM_GRAPH = "REMOVE_GRAPH";
+export const TOGGLE_MODAL = "TOGGLE_MODAL";
+export const ADD_WATCH = "ADD_WATCH";
 
 // Action Interfaces
 export interface LoginAction { type: "LOGGED_IN" }
@@ -17,11 +18,6 @@ export interface LoginAction { type: "LOGGED_IN" }
 export interface SearchResult {
   type: "SEARCH_RESULT",
   results: Array<Company>
-}
-
-export interface CompanyFromIndex {
-  type: "SEARCH_RESULT_INDEX",
-  index: number
 }
 
 export interface AddGraph {
@@ -36,7 +32,17 @@ export interface RemoveGraph {
   graphId: string
 }
 
-export type ValidAction = SearchResult & LoginAction & CompanyFromIndex & AddGraph & RemoveGraph;
+export interface ToggleModalDisplay {
+  type: "TOGGLE_MODAL"
+}
+
+export interface AddWatch {
+  type: "ADD_WATCH",
+  company: Company,
+  targetPrice: number
+}
+
+export type ValidAction = SearchResult & AddGraph & RemoveGraph & ToggleModalDisplay & AddWatch;
 
 // Action for updating state with list of matching company names from database
 // Used on Search.tsx
@@ -85,5 +91,34 @@ export const removeGraph: ActionCreator<RemoveGraph> = (graphId: string) => {
   return {
     type: REM_GRAPH,
     graphId: graphId
+  }
+}
+
+export const toggleModalDisplay: ActionCreator<ToggleModalDisplay> = () => {
+  return {
+    type: TOGGLE_MODAL
+  }
+}
+export const addWatch = (company: Company, targetPrice: number, phoneNumber: string) => {
+  return function(dispatch: Dispatch<IState>) {
+    let watchRequest = new Request("/notifications/watchprice", {
+      method: "POST",
+      body: {
+        equity: company.symbol,
+        phone: phoneNumber,
+        price: targetPrice
+      }
+    });
+    return fetch(watchRequest)
+      .then(res => {
+        return res.json()
+      })
+      .then(json => {
+        if (json.success) {
+          dispatch<ToggleModalDisplay>({
+            type: TOGGLE_MODAL
+          });
+        }
+      });
   }
 }
