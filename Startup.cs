@@ -51,12 +51,9 @@ namespace StockWatcher
 
             services.AddDataProtection();
 
-            services.AddTransient<ManageUser>();
-            services.AddTransient<SmsService>();
             services.AddTransient<StockRequestService>();
             services.AddTransient<QueryCompanyService>();
             services.AddTransient<AlphaVantageService>();
-            services.AddTransient<JWTService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
