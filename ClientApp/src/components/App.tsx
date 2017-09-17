@@ -10,21 +10,13 @@ interface AppProps {
 }
 
 
-class App extends React.Component<AppProps, {}> {
+export default class App extends React.Component<AppProps, {}> {
   render() {
     return (
-      <main className={this.props.showModal ? "DimBody" : ""}>
+      <main>
         <Header />
         <Body />
       </main>
     );
   }
 }
-
-function mapStateToProps(state: IState) {
-  return {
-    showModal: state.showModal
-  }
-}
-
-export default connect(mapStateToProps)(App);
