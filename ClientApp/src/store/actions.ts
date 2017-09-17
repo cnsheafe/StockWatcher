@@ -33,7 +33,8 @@ export interface RemoveGraph {
 }
 
 export interface ToggleModalDisplay {
-  type: "TOGGLE_MODAL"
+  type: "TOGGLE_MODAL",
+  symbol?: string
 }
 
 export interface AddWatch {
@@ -94,31 +95,51 @@ export const removeGraph: ActionCreator<RemoveGraph> = (graphId: string) => {
   }
 }
 
-export const toggleModalDisplay: ActionCreator<ToggleModalDisplay> = () => {
+export const toggleModalDisplay: ActionCreator<ToggleModalDisplay> = (symbol?: string) => {
   return {
-    type: TOGGLE_MODAL
+    type: TOGGLE_MODAL,
+    symbol: symbol
   }
 }
-export const addWatch = (company: Company, targetPrice: number, phoneNumber: string) => {
-  return function(dispatch: Dispatch<IState>) {
+export const addWatchAsync = 
+  (symbol: string, 
+  targetPrice: number, 
+  phoneNumber: string) => {
+  console.log(symbol);
+  console.log(targetPrice);
+  console.log(phoneNumber);
+  return function(dispatch: Dispatch<IState>): Promise<boolean> {
+    let header = new Headers({"Content-Type": "application/json"});
+    let bodyBlob = new Blob(
+      [
+        JSON.stringify(
+        {
+          symbol: symbol,
+          phone: phoneNumber,
+          price: targetPrice
+        })
+      ]
+    );
+
     let watchRequest = new Request("/notifications/watchprice", {
       method: "POST",
-      body: {
-        equity: company.symbol,
-        phone: phoneNumber,
-        price: targetPrice
-      }
+      body: bodyBlob,
+      headers: header
     });
+
     return fetch(watchRequest)
       .then(res => {
-        return res.json()
+        return res.status;
       })
-      .then(json => {
-        if (json.success) {
+      .then(status => {
+        console.log(status);
+        if (status === 201) {
           dispatch<ToggleModalDisplay>({
             type: TOGGLE_MODAL
           });
+          return true;
         }
+        return false;
       });
   }
 }
