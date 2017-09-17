@@ -57,11 +57,6 @@ namespace StockWatcher.Controllers
             }
 
         }
-        [HttpPost]
-        public void CancelRequest([FromBody]Stock stock)
-        {
-            // Remove user
-        }
     }
 }
 
