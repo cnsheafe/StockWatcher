@@ -20,22 +20,24 @@ class Graphs extends React.Component<GraphsProps, {}> {
     store.dispatch(removeGraph(graphId));
   }
 
+  handleWatch(symbol: string) {
+    store.dispatch(toggleModalDisplay(symbol));
+  }
+
   render() {
     const graphs = this.props.graphs.map<JSX.Element>((graph: Graph, index: number) => {
       return (
         <li key={index} className="graphs-list-item">
           <canvas id={graph.graphId}></canvas>
           <div className="graph-controls">
-            <button data-id={graph.graphId} onClick={e => this.handleRemove(e)} className="remove">
+            <button className="remove" data-id={graph.graphId} onClick={e => this.handleRemove(e)}>
               <i className="material-icons red-remove700">remove_circle</i>
-              <b className="remove-text">Remove</b>  
+              <b>Remove</b>  
             </button>
-            <span className="watch">
-              <button onClick={e => {store.dispatch(toggleModalDisplay())}}>
-                <i className="material-icons purple-watch700">remove_red_eye</i>
-                <b>Watch</b>
-              </button>
-            </span>
+            <button className="watch" onClick={e => {this.handleWatch(graph.company.symbol)}}>
+              <i className="material-icons purple-watch700">remove_red_eye</i>
+              <b>Watch</b>
+            </button>
 
           </div>
         </li>
