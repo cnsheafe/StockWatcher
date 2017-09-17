@@ -23,7 +23,8 @@ import {
 export interface IState {
   searchResults: Array<Company>,
   graphs: Array<Graph>,
-  showModal: boolean
+  showModal: boolean,
+  modalSymbol: string
 }
 
 
@@ -67,7 +68,8 @@ function reducer(state: IState, action: ValidAction): IState {
     case TOGGLE_MODAL || ADD_WATCH:
       return Object.assign({}, state, 
       {
-        showModal: !state.showModal
+        showModal: !state.showModal,
+        modalSymbol: action.symbol
       })
     default:
       return state;
@@ -77,7 +79,8 @@ function reducer(state: IState, action: ValidAction): IState {
 const initialState: IState = {
   searchResults: [],
   graphs: [],
-  showModal: false
+  showModal: false,
+  modalSymbol: ""
 };
 
 export default createStore(reducer, initialState, applyMiddleware(thunk));
