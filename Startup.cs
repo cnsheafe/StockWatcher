@@ -49,8 +49,6 @@ namespace StockWatcher
                 options.UseNpgsql(Configuration.GetConnectionString("PostGresConnection"))
             );
 
-            services.AddDataProtection();
-
             services.AddTransient<StockRequestService>();
             services.AddTransient<QueryCompanyService>();
             services.AddTransient<AlphaVantageService>();
@@ -61,12 +59,15 @@ namespace StockWatcher
         {
             if (env.IsDevelopment())
             {
+                Console.WriteLine("Is Development");
                 app.UseDeveloperExceptionPage();
-                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-                {
-                    HotModuleReplacement = true,
-                    ReactHotModuleReplacement = true
-                });
+                app.UseWebpackDevMiddleware(
+                    new WebpackDevMiddlewareOptions
+                    {
+                        HotModuleReplacement = true,
+                        ReactHotModuleReplacement = true
+                    }
+                );
             }
             else
             {
@@ -79,11 +80,11 @@ namespace StockWatcher
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}");
 
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
+                // routes.MapSpaFallbackRoute(
+                //     name: "spa-fallback",
+                //     defaults: new { controller = "Home", action = "Index" });
             });
 
             app.UseHangfireDashboard();
