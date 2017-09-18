@@ -7,7 +7,7 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/StockWatcher/StockWatcher.csproj"
+                "${workspaceRoot}/StockWatcher.csproj"
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
