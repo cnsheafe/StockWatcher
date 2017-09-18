@@ -1,0 +1,5 @@
+- modal margin
+- modal overlay for shading
+- modal phone number formatting
+- color palette shrink
+- database query limiting
