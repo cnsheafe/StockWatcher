@@ -20,12 +20,8 @@ namespace StockWatcher.Controllers
 {
     public class NotificationsController : Controller
     {
-        private string accountSid = Environment.GetEnvironmentVariable("TwilioAcctSid");
-        private string authToken = Environment.GetEnvironmentVariable("TwilioAuthToken");
-        private string serviceSid = Environment.GetEnvironmentVariable("TwilioServiceSid");
-
-        private readonly StockRequestService requestService;
-        public NotificationsController(StockRequestService _requestService)
+        private readonly IStockRequestService requestService;
+        public NotificationsController(IStockRequestService _requestService)
         {
             requestService = _requestService;
         }
@@ -38,7 +34,7 @@ namespace StockWatcher.Controllers
                 if (requestService.AddRequest(stock))
                 {
                     var jobId = Guid.NewGuid().ToString();
-                    RecurringJob.AddOrUpdate<StockRequestService>(
+                    RecurringJob.AddOrUpdate<IStockRequestService>(
                         jobId,
                         service =>
                         service.QueryStock(stock, jobId),
