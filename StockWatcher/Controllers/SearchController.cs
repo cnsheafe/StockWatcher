@@ -16,37 +16,21 @@ namespace StockWatcher.Controllers
 {
     public class SearchController : Controller
     {
-        private readonly QueryCompanyService service;
-        public SearchController(QueryCompanyService _service)
+        private readonly IQueryCompanyService service;
+        public SearchController(IQueryCompanyService _service)
         {
             service = _service;
         }
 
         [HttpGet("/company")]
-        public IActionResult GetCompany()
+        public IActionResult GetCompany([FromQuery]Query query)
         {
-            var queryTerms = Request.Query;
-            Query query = new Query();
-
-            IEnumerable<PropertyInfo> allowedKeys = typeof(Query).GetProperties();
-
-            foreach (var item in allowedKeys)
-            {
-                var key = item.Name.ToString();
-                if (!queryTerms.ContainsKey(key))
-                {
-                    Response.StatusCode = 400;
-                    return Json("Error");
-                }
-            }
-
-            StringValues tmp;
-            queryTerms.TryGetValue("searchphrase", out tmp);
-            query.SearchPhrase = tmp;
-            queryTerms.TryGetValue("issymbol", out tmp);
-            query.IsSymbol = tmp;
-            Response.StatusCode = 200;
             JsonResult apiResult = Json(service.SearchCompanies(query));
+            if(apiResult == null) 
+            {
+                Response.StatusCode = 400;
+                return null;
+            }
 
             return apiResult;
         }
