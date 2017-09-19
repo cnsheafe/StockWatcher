@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,7 @@ namespace StockWatcher.Model.Schemas
     {
         public string SearchPhrase { get; set; }
 
-        public string IsSymbol { get; set; }
+        public bool IsSymbol { get; set; }
 
     }
 }
