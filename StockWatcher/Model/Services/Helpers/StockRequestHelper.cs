@@ -12,24 +12,27 @@ namespace StockWatcher.Model.Services.Helpers
 {
     public class StockRequestHelper
     {
-        private string accountSid =
-            Environment.GetEnvironmentVariable(
-                "TwilioAcctSid"
-            );
-        private string authToken =
-            Environment.GetEnvironmentVariable(
-                "TwilioAuthToken"
-            );
-        private string serviceSid =
-            Environment.GetEnvironmentVariable(
-                "TwilioServiceSid"
-            );
+        private string accountSid;
+        private string authToken;
+        private string serviceSid;
+
 
         private StockDbContext context;
 
         public StockRequestHelper(StockDbContext _context)
         {
             context = _context;
+            accountSid = Environment.GetEnvironmentVariable(
+                "TwilioAcctSid"
+            );
+
+            authToken = Environment.GetEnvironmentVariable(
+                "TwilioAuthToken"
+            );
+
+            serviceSid = Environment.GetEnvironmentVariable(
+                "TwilioServiceSid"
+            );
         }
 
         /// <summary>
@@ -65,17 +68,16 @@ namespace StockWatcher.Model.Services.Helpers
         public BindingResource BindUser(string uuid, string phoneNumber)
         {
             TwilioClient.Init(
-                Environment.GetEnvironmentVariable("TwilioAcctSid"),
-                Environment.GetEnvironmentVariable("TwilioAuthToken")
+                accountSid,
+                authToken
             );
             var binding = BindingResource.Create(
-                Environment.GetEnvironmentVariable("TwilioServiceSid"),
+                serviceSid,
                 identity: uuid,
                 bindingType: BindingResource.BindingTypeEnum.Sms,
                 address: phoneNumber
             );
             return binding;
         }
-
     }
 }
