@@ -74,7 +74,7 @@ namespace StockWatcher.Model.Services
             return success;
         }
 
-        public async Task QueryStock(Stock stock, string jobId)
+        public async Task<Boolean> QueryStock(Stock stock, string jobId)
         {
             using (var client = new HttpClient())
             {
@@ -125,7 +125,9 @@ namespace StockWatcher.Model.Services
                     RecurringJob.RemoveIfExists(jobId);
                     RemoveRequest(stock);
                     Console.WriteLine("Finished sending notification");
+                    return true;
                 }
+                return false;
             }
         }
         private static bool IsOpenHours()
