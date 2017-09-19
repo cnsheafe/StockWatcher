@@ -97,9 +97,9 @@ namespace StockWatcher
                 options.UseNpgsql(connectionString)
             );
 
-            services.AddTransient<StockRequestService>();
-            services.AddTransient<QueryCompanyService>();
-            services.AddTransient<AlphaVantageService>();
+            services.AddTransient<IStockRequestService, StockRequestService>();
+            services.AddTransient<IQueryCompanyService, QueryCompanyService>();
+            services.AddTransient<IAlphaVantageService, AlphaVantageService>();
         }
 
     }
