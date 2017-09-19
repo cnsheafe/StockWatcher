@@ -14,7 +14,7 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model.Services
 {
-    public class AlphaVantageService
+    public class AlphaVantageService : IAlphaVantageService
     {
         public async Task<IEnumerable<DataPoint>> RequestStockPrice(string StockSymbol)
         {
@@ -83,4 +83,10 @@ namespace StockWatcher.Model.Services
             }
         }
     }
+    public interface IAlphaVantageService
+    {
+        Task<IEnumerable<DataPoint>> RequestStockPrice(string StockSymbol);
+
+    }
+
 }

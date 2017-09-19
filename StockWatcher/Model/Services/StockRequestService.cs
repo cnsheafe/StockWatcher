@@ -20,7 +20,7 @@ using StockWatcher.Model.Services.Helpers;
 
 namespace StockWatcher.Model.Services
 {
-    public class StockRequestService
+    public class StockRequestService : IStockRequestService
     {
         private readonly StockDbContext context;
         private StockRequestHelper helper;
@@ -136,5 +136,12 @@ namespace StockWatcher.Model.Services
             DateTime endOfDay = DateTime.Today.AddHours(18);
             return DateTime.Compare(now, endOfDay) < 0 ? true : false;
         }
+    }
+
+    public interface IStockRequestService
+    {
+        bool AddRequest(Stock stock);
+        bool RemoveRequest(Stock stock);
+        Task<Boolean> QueryStock(Stock stock, string jobId);
     }
 }

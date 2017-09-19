@@ -8,7 +8,7 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model.Services
 {
-    public class QueryCompanyService
+    public class QueryCompanyService : IQueryCompanyService
     {
         private readonly StockDbContext context;
         public QueryCompanyService(StockDbContext _context)
@@ -25,7 +25,7 @@ namespace StockWatcher.Model.Services
                 return companies;
             }
 
-            if (query.IsSymbol.CompareTo("true") == 0)
+            if (query.IsSymbol)
             {
                 companies = table
                     .Where(c => c.Symbol.Contains(query.SearchPhrase.ToUpper()))
@@ -43,5 +43,10 @@ namespace StockWatcher.Model.Services
 
             return companies;
         }
+    }
+
+    public interface IQueryCompanyService
+    {
+        IEnumerable<Company> SearchCompanies(Query query);
     }
 }
