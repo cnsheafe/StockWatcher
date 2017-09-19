@@ -9,8 +9,8 @@ namespace StockWatcher.Controllers
 {
     public class StockPriceController : Controller
     {
-        private AlphaVantageService service;
-        public StockPriceController(AlphaVantageService _service)
+        private IAlphaVantageService service;
+        public StockPriceController(IAlphaVantageService _service)
         {
             service = _service;
         }
