@@ -46,10 +46,23 @@ namespace StockWatcher.Model.Services
                 {
                     Console.WriteLine("\n Exception Caught!");
                     Console.WriteLine($"Message: {err.Message}");
+                    return null;
                 }
 
-                var parsedResponse = JObject.Parse(responseBody)["Time Series (Daily)"].Value<JObject>();
-                var timestamps = parsedResponse.Properties().Select(p => p.Name).ToArray();
+                var parsedResponse = new JObject();
+                try
+                {
+                    parsedResponse = JObject.Parse(responseBody)["Time Series (Daily)"]
+                        .Value<JObject>();
+                }
+                catch (System.Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return null;
+                }
+                var timestamps = parsedResponse.Properties()
+                    .Select(p => p.Name)
+                    .ToArray();
 
                 var priceHistory = parsedResponse.Children()
                     .Select(timeSeries => timeSeries.Children().First())
@@ -59,12 +72,14 @@ namespace StockWatcher.Model.Services
                 var history = new DataPoint[priceHistory.Count()];
                 for (int i = 0; i < timestamps.Length; i++)
                 {
-                    history[i] = (new DataPoint() { TimeStamp = timestamps[i], Price = priceHistory[i] });
+                    history[i] = (new DataPoint()
+                    {
+                        TimeStamp = timestamps[i],
+                        Price = priceHistory[i]
+                    });
                 }
 
-
                 return history;
-
             }
         }
     }
