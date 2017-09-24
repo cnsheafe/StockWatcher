@@ -14,6 +14,9 @@ namespace StockWatcher.Controllers
         {
             service = _service;
         }
+
+        [HttpGet]
+        [Route("stockprice")]
         public IActionResult Index([FromQuery]string StockSymbol)
         {
             var data = service.RequestStockPrice(StockSymbol);
