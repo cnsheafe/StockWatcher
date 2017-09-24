@@ -1,6 +1,7 @@
 const path = require("path");
 const appConfig = require("config-tsx");
 const CheckerPlugin = require("awesome-typescript-loader").CheckerPlugin;
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const merge = require("webpack-merge");
 const webpack = require("webpack");
 
@@ -16,6 +17,9 @@ const appSettings = appConfig.createPaths(__dirname, options);
 appConfig.createTsConfig(__dirname, appSettings["out-dir"]);
 
 module.exports = env => {
+    const isDevBuild = !(env && env.prod);
+    console.log("webpack: ", isDevBuild);
+
     const sharedConfig = () => ({
         stats: {
             modules: false
@@ -29,19 +33,6 @@ module.exports = env => {
         },
         module: {
             rules: [{
-                    test: /\.jsx?$/,
-                    include: [
-                        appSettings["input-dir"]
-                    ],
-                    loader: "babel-loader",
-                    options: {
-                        presets: [
-                            "es2015",
-                            "react"
-                        ]
-                    }
-                },
-                {
                     test: /\.tsx?$/,
                     include: [
                         appSettings["input-dir"]
@@ -68,29 +59,52 @@ module.exports = env => {
             mainFields: ["main"]
         },
         entry: {
-            "server": appSettings["entry-file"]
+            "server": path.normalize(`${appSettings["input-dir"]}/boot-server.tsx`)
         },
         output: {
             libraryTarget: "commonjs",
             path: appSettings["output-dir"]
         },
         target: "node",
-        devtool: "inline-source-map"
+        devtool: "inline-source-map",
+        plugins: [
+            new webpack.DllReferencePlugin({
+                context: __dirname,
+                manifest: require(`./ClientApp/dist/vendor-manifest.json`),
+                name: "./vendor",
+                sourceType: "commonjs2"
+            })
+        ]
     });
 
     const clientBundleOutputDir = path.normalize(`${__dirname}/wwwroot/dist`);
     const clientConfig = merge(sharedConfig(), {
         entry: {
-            "client": path.join(appSettings["input-dir"], "boot-client.tsx")
+            "client": path.normalize(`${appSettings["input-dir"]}/boot-client.tsx`)
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.css$/,
+                    use: ExtractTextPlugin.extract({ use: isDevBuild ? "css-loader" : "css-loader?minimize"})
+                }
+            ]
         },
         output: {
             path: clientBundleOutputDir
         },
         plugins: [
+            isDevBuild ? 
             new webpack.SourceMapDevToolPlugin({
                 filename: '[file].map', // Remove this line if you prefer inline source maps
                 moduleFilenameTemplate: path.relative(clientBundleOutputDir, '[resourcePath]') // Point sourcemap entries to the original file locations on disk
-            })
+            }) : 
+            new webpack.optimize.UglifyJsPlugin(),
+            new webpack.DllReferencePlugin({
+                context: __dirname,
+                manifest: require(`${clientBundleOutputDir}/vendor-manifest.json`)
+            }),
+            new ExtractTextPlugin("style.css")
         ],
     });
 
