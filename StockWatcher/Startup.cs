@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
@@ -66,6 +67,10 @@ namespace StockWatcher
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseCors(builder => {
+                builder.AllowAnyOrigin();
+            });
+
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
@@ -89,6 +94,8 @@ namespace StockWatcher
         private void ServicesHelper(IServiceCollection services, string connectionString) 
         {
             services.AddMvc();
+            services.AddCors();
+
             services.AddHangfire(config =>
                 config.UsePostgreSqlStorage(connectionString)
             );
