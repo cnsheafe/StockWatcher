@@ -1,3 +1,4 @@
+import "./dist/style.css";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "react-hot-loader/patch";
