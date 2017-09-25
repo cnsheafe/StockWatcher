@@ -24,10 +24,12 @@ namespace StockWatcher.Model.Services
     {
         private readonly StockDbContext context;
         private StockRequestHelper helper;
+        private LimitCountChecker checker;
         public StockRequestService(StockDbContext _context)
         {
             context = _context;
             helper = new StockRequestHelper(_context);
+            checker = new LimitCountChecker(_context);
         }
         public bool AddRequest(Stock stock)
         {
@@ -35,13 +37,23 @@ namespace StockWatcher.Model.Services
 
             try
             {
-                var request = new RequestRecord();
-                request.RequestId = stock.RequestId;
-                request.Price = stock.Price;
-                request.TwilioBinding = Guid.NewGuid().ToString();
+
+                if(checker.IsOverLimit(stock.Phone))
+                {
+                    return false;
+                }
+
+                var request = new RequestRecord
+                {
+                    RequestId = stock.RequestId,
+                    Price = stock.Price,
+                    TwilioBinding = Guid.NewGuid().ToString()
+                };
+
                 helper.BindUser(request.TwilioBinding, stock.Phone);
 
-                context.Add(request);
+                context.Requests.Add(request);
+                checker.Increment(stock.Phone);
                 context.SaveChanges();
             }
             catch (DbUpdateException dbException)

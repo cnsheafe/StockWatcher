@@ -16,6 +16,7 @@ namespace StockWatcher.Model
 
         public DbSet<Company> Companies { get; set; }
         public DbSet<RequestRecord> Requests { get; set; }
+        public DbSet<LimitCount> LimitCounts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Company>(entity =>
@@ -28,9 +29,20 @@ namespace StockWatcher.Model
                 entity.Property(e => e.IPOyear).HasColumnName("IPOyear");
             });
 
-            modelBuilder.Entity<RequestRecord>(entity => {
+            modelBuilder.Entity<RequestRecord>(entity =>
+            {
                 entity.HasKey(e => e.Id);
                 entity.ToTable("requests");
+            });
+
+            modelBuilder.Entity<LimitCount>(entity =>
+            {
+                entity.ToTable("limit_count");
+                entity.HasKey(e => e.PhoneHash);
+                entity.Property(e => e.PhoneHash).HasColumnName("phone_hash");
+                entity.Property(e => e.Date).HasColumnName("date");
+                entity.Property(e => e.Count).HasColumnName("count");
+
             });
         }
     }
