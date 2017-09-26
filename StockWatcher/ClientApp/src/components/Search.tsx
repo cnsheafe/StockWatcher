@@ -6,11 +6,11 @@ import { IState } from "../store/store";
 import { Company } from "../store/schema";
 import { ListSearchResults,  addGraphAsync } from "../store/actions";
 
-interface SearchProps {
+export interface SearchProps {
   searchResults: Array<Company>
 }
 
-class Search extends React.Component<SearchProps, {}> {
+export class Search extends React.Component<SearchProps, {}> {
 
   suggestionHandler(event: React.MouseEvent<HTMLUListElement>) {
     let target = event.target as HTMLElement;
@@ -64,8 +64,13 @@ class Search extends React.Component<SearchProps, {}> {
 }
 
 function fetchCompanies(searchPhrase: string, isSymbol: boolean): Promise<JSON> {
+  console.log(isSymbol.toString());
+  const headers = new Headers({
+    "Accept": "application/json"
+  });
   let searchRequest = new Request(`/company/?searchphrase=${searchPhrase}&issymbol=${isSymbol.toString()}`, {
-    method: "GET"
+    method: "GET",
+    headers: headers
   });
 
   return fetch(searchRequest)

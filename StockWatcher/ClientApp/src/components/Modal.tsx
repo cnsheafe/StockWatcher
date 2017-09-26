@@ -4,12 +4,12 @@ import { Company } from "../store/schema";
 import store, { IState } from "../store/store";
 import { connect } from "react-redux";
 
-interface ModalProps {
+export interface ModalProps {
   showModal: boolean,
   modalSymbol: string
 }
 
-class Modal extends React.Component<ModalProps, {}> {
+export class Modal extends React.Component<ModalProps, {}> {
   private bodyElement: HTMLElement;
   private keyCallback: (event: KeyboardEvent)  => void;
   private mouseCallback: (event: MouseEvent) => void;
@@ -18,10 +18,11 @@ class Modal extends React.Component<ModalProps, {}> {
   handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const symbol = this.props.modalSymbol;
-    let tmp = document.getElementById("modal-price") as HTMLInputElement;
-    const price: number = +tmp.value;
-    tmp = document.getElementById("modal-phone") as HTMLInputElement;
-    const phone = tmp.value;
+    const price = +(document.getElementById("modal-price") as HTMLInputElement).value;
+    const areaCode = (document.getElementById("phone-area-code") as HTMLInputElement).value;
+    const field1 = (document.getElementById("phone-field-1") as HTMLInputElement).value;
+    const field2 = (document.getElementById("phone-field-2") as HTMLInputElement).value;
+    const phone = `+1${areaCode}${field1}${field2}`;
 
     store.dispatch(addWatchAsync(symbol, price, phone))
       .then(status => {
@@ -45,16 +46,21 @@ class Modal extends React.Component<ModalProps, {}> {
           USA numbers. 
         </p>
         <form className="modal-form" onSubmit={e => this.handleSubmit(e)}>
-          <label htmlFor="modal-price">Price</label>
+          <label htmlFor="modal-price">Price(USD)</label>
           <input 
             type="number" 
             step="0.01"
             min="0.01"
             max="2000"
             className="modal-price" 
-            id="modal-price"/>
-          <label htmlFor="modal-phone" >Phone Number</label>
-          <input type="tel" className="modal-phone" id="modal-phone"/>
+            id="modal-price"
+            placeholder="10.00" />
+          <label htmlFor="modal-phone">Phone Number</label>
+          <div id="modal-phone" className="modal-phone">
+            <input id="phone-area-code" type="tel" maxLength={3} placeholder="555"/>
+            <input id="phone-field-1" type="tel" maxLength={3} placeholder="123"/>
+            <input id="phone-field-2" type="tel" maxLength={4} placeholder="4567"/>
+          </div>
           <button 
             type="submit" 
             className="modal-button">Submit
@@ -66,12 +72,12 @@ class Modal extends React.Component<ModalProps, {}> {
 
   componentDidMount() {
     this.bodyElement = document.getElementsByTagName("body")[0] as HTMLElement;
-
+   
     this.keyCallback = (event: KeyboardEvent) => {
       // Look for ESC Key
       if (event.which === 27 && this.props.showModal) {
         store.dispatch(toggleModalDisplay());
-        this.bodyElement.classList.toggle(this.dimCSS);
+
 
         this.bodyElement
           .removeEventListener("keyup", this.keyCallback);
@@ -92,12 +98,14 @@ class Modal extends React.Component<ModalProps, {}> {
         target.className === "modal-phone" ||
         target.className === "modal-form" ||
         target.className === "modal-button" ||
-        target.tagName === "LABEL" && 
+        target.tagName === "LABEL" ||
+        target.tagName === "P" || 
+        target.className === "modal-header" ||
+        target.tagName === "INPUT" && 
         this.props.showModal
       )) 
       {
         store.dispatch(toggleModalDisplay());
-        this.bodyElement.classList.toggle(this.dimCSS);
 
         this.bodyElement
           .removeEventListener("keyup", this.keyCallback);
@@ -110,8 +118,8 @@ class Modal extends React.Component<ModalProps, {}> {
 
   componentDidUpdate() {
 
+    this.bodyElement.classList.toggle(this.dimCSS);
     if (this.props.showModal) {
-      this.bodyElement.classList.toggle(this.dimCSS);
       this.bodyElement.addEventListener("keyup", this.keyCallback);
       this.bodyElement.addEventListener("click", this.mouseCallback);
     }

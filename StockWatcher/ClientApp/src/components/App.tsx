@@ -1,21 +1,16 @@
 import * as React from "react";
 import Header from "./Header";
 import { Body } from "./Body";
-import {connect} from "react-redux";
-import store, {IState} from "../store/store";
-import { toggleModalDisplay } from "../store/actions";
-
-interface AppProps {
-  showModal: boolean
-}
+import { Footer } from "./Footer";
 
 
-export default class App extends React.Component<AppProps, {}> {
+export default class App extends React.Component {
   render() {
     return (
       <main>
         <Header />
         <Body />
+        <Footer />
       </main>
     );
   }
