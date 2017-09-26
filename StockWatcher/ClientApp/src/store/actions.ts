@@ -1,5 +1,6 @@
 import { ActionCreator, Dispatch } from "redux";
 import thunk, { ThunkAction } from "redux-thunk";
+require("isomorphic-fetch");
 
 import { Company, Graph } from "./schema";
 import { IState } from "./store";
@@ -37,14 +38,6 @@ export interface ToggleModalDisplay {
   symbol?: string
 }
 
-export interface AddWatch {
-  type: "ADD_WATCH",
-  company: Company,
-  targetPrice: number
-}
-
-export type ValidAction = SearchResult & AddGraph & RemoveGraph & ToggleModalDisplay & AddWatch;
-
 // Action for updating state with list of matching company names from database
 // Used on Search.tsx
 export const ListSearchResults: ActionCreator<SearchResult> =
@@ -59,9 +52,15 @@ export const addGraphAsync =
   (company: Company) => {
 
     return function(dispatch: Dispatch<IState>) {
+      const headers = new Headers({
+        "Accept": "application/json"
+      });
       let stockRequest = new Request(
-        `/stockprice?stocksymbol=${company.symbol}`,
-        { method: "GET" });
+        `https://stock-watcher-app.herokuapp.com/stockprice/?stocksymbol=${company.symbol}`,
+        { 
+          method: "GET",
+          headers: headers
+        });
       
       return fetch(stockRequest)
         .then(res => {
@@ -109,7 +108,9 @@ export const addWatchAsync =
   console.log(targetPrice);
   console.log(phoneNumber);
   return function(dispatch: Dispatch<IState>): Promise<boolean> {
-    let header = new Headers({"Content-Type": "application/json"});
+    let header;
+      header = new Headers({"Content-Type": "application/json"});
+      
     let bodyBlob = new Blob(
       [
         JSON.stringify(
@@ -121,7 +122,8 @@ export const addWatchAsync =
       ]
     );
 
-    let watchRequest = new Request("/notifications/watchprice", {
+    let watchRequest = new Request(
+      "https://stock-watcher-app.herokuapp.com/notifications/watchprice", {
       method: "POST",
       body: bodyBlob,
       headers: header
