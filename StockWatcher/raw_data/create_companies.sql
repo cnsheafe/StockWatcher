@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS companies(
     "Industry" TEXT,
     "SummaryQuote" TEXT
 );
-
-\copy companies FROM '~/Programming/NET/StockWatcher/processed-companylist.csv' WITH (FORMAT CSV, HEADER TRUE);
+-- Replace path with absolute location of your csv data
+\copy companies FROM '~/Programming/NET/StockWatcher/StockWatcher/raw_data/processed-companylist.csv' WITH (FORMAT CSV, HEADER TRUE);
