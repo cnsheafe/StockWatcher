@@ -31,16 +31,7 @@
     .material-icons.purple-watch700 {
         color: $accent-purple-light-color;
     }
-    .canvas-container {
-        position: relative;
-        height: 60vh;
-        @media screen and (min-width: $small) {
-            height: 50vh;
-        }
-        @media screen and (min-width: $medium) {
-            height: 40vh;
-        }
-    }
+
     .graph-controls {
         @extend .container;
         flex-direction: row;

@@ -5,7 +5,6 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
-    const extractCSS = new ExtractTextPlugin('vendor.css');
 
     console.log(isDevBuild);
 
@@ -39,16 +38,10 @@ module.exports = (env) => {
     };
 
     const clientBundleConfig = merge(sharedConfig, {
-        output: { path: path.join(__dirname, 'wwwroot', 'dist') },
-        module: {
-            rules: [
-                { test: /\.css(\?|$)/, use: extractCSS.extract({ use: isDevBuild ? 'css-loader' : 'css-loader?minimize' }) }
-            ]
-        },
+        output: { path: path.join(__dirname, 'wwwroot', 'dist/app') },
         plugins: [
-            extractCSS,
             new webpack.DllPlugin({
-                path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
+                path: path.join(__dirname, 'wwwroot', 'dist/app', '[name]-manifest.json'),
                 name: '[name]_[hash]'
             })
         ].concat(isDevBuild ? [] : [
@@ -63,9 +56,6 @@ module.exports = (env) => {
             path: path.join(__dirname, 'ClientApp', 'dist'),
             libraryTarget: 'commonjs2',
         },
-        // module: {
-        //     rules: [ { test: /\.css(\?|$)/, use: isDevBuild ? 'css-loader' : 'css-loader?minimize' } ]
-        // },
         entry: { vendor: ['aspnet-prerendering', 'react-dom/server'] },
         plugins: [
             new webpack.DllPlugin({

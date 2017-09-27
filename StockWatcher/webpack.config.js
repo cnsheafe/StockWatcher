@@ -77,18 +77,10 @@ module.exports = env => {
         ]
     });
 
-    const clientBundleOutputDir = path.normalize(`${__dirname}/wwwroot/dist`);
+    const clientBundleOutputDir = path.normalize(`${__dirname}/wwwroot/dist/app`);
     const clientConfig = merge(sharedConfig(), {
         entry: {
             "client": path.normalize(`${appSettings["input-dir"]}/boot-client.tsx`)
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.css$/,
-                    use: ExtractTextPlugin.extract({ use: isDevBuild ? "css-loader" : "css-loader?minimize"})
-                }
-            ]
         },
         output: {
             path: clientBundleOutputDir
@@ -103,8 +95,7 @@ module.exports = env => {
             new webpack.DllReferencePlugin({
                 context: __dirname,
                 manifest: require(`${clientBundleOutputDir}/vendor-manifest.json`)
-            }),
-            new ExtractTextPlugin("style.css")
+            })
         ],
     });
 
