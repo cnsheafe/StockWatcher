@@ -1,7 +1,8 @@
 language: csharp
 mono: none
+solution: StockWatcher.sln
 dotnet: 2.0.0
 dist: trusty
 script: 
   - dotnet restore
-  # - dotnet xunit
+  - dotnet test
