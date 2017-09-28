@@ -29,20 +29,21 @@ namespace StockWatcher.Controllers
         }
 
         [HttpPost]
-        public void WatchPrice([FromBody]Stock stock)
+        public async Task WatchPrice([FromBody]Stock stock)
         {
             if (ModelState.IsValid)
             {
                 if (requestService.AddRequest(stock))
                 {
-                    var jobId = Guid.NewGuid().ToString();
-                    RecurringJob.AddOrUpdate<IStockRequestService>(
-                        jobId,
-                        service =>
-                        service.QueryStock(stock, jobId),
-                        Cron.Minutely()
-                    );
-                    Response.StatusCode = 201;
+                    bool success = await requestService.QueryStock(stock, "no_id");
+                    if(success)
+                    {
+                        Response.StatusCode = 201;
+                    }
+                    else
+                    {
+                        Response.StatusCode = 500;
+                    }
                 }
                 else
                 {
