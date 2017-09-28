@@ -126,23 +126,6 @@ namespace StockWatcher.Model.Services.Helpers
             return false;
         }
 
-        // public bool IsExpired(string phone)
-        // {
-        //     try
-        //     {
-        //         var limitCount = context.LimitCounts
-        //             .Single(lc => VerifyHash(phone, lc.PhoneHash));
-        //         if(limitCount.Date)
-                
-
-        //     }
-        //     catch (DbUpdateException dbException)
-        //     {
-        //         Console.WriteLine(dbException.Message);
-        //         return false;
-        //     }
-        // }
-
         private string MakeHash(string phone)
         {
             return BCrypt.Net.BCrypt.HashPassword(phone);
