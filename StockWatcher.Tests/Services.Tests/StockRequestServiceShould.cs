@@ -27,14 +27,14 @@ namespace StockWatcher.Model.Services.Tests
         {
 
             DB_URL = Environment.GetEnvironmentVariable("DATABASE_URL");
-            PHONE = Environment.GetEnvironmentVariable("Phone");
+            PHONE = Environment.GetEnvironmentVariable("PhoneNumber");
             context = new MockDbContextFactory().CreateDbContext(null);
             mockService = new StockRequestService(context);
 
             mockStock = new Stock
             {
                 Symbol="msft",
-                Phone= PHONE,
+                Phone=PHONE,
                 Price=1.99
             };
 
