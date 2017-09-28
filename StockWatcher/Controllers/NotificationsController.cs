@@ -13,6 +13,7 @@ using Twilio;
 using Twilio.Rest.Notify.V1.Service;
 using Twilio.Types;
 
+using StockWatcher.Model;
 using StockWatcher.Model.Services;
 using StockWatcher.Model.Schemas;
 
@@ -21,9 +22,10 @@ namespace StockWatcher.Controllers
     public class NotificationsController : Controller
     {
         private readonly IStockRequestService requestService;
-        public NotificationsController(IStockRequestService _requestService)
+        private StockDbContext context;
+        public NotificationsController(StockDbContext _context)
         {
-            requestService = _requestService;
+            requestService = new StockRequestService(_context);
         }
 
         [HttpPost]
