@@ -56,7 +56,7 @@ export const addGraphAsync =
         "Accept": "application/json"
       });
       let stockRequest = new Request(
-        `https://stock-watcher-app.herokuapp.com/stockprice/?stocksymbol=${company.symbol}`,
+        `/stockprice/?stocksymbol=${company.symbol}`,
         { 
           method: "GET",
           headers: headers
@@ -67,7 +67,6 @@ export const addGraphAsync =
           return res.json();
         })
         .then((json) => {
-          console.log(json);
           let dataPoints = [];
           let labels = [];
 
@@ -104,9 +103,6 @@ export const addWatchAsync =
   (symbol: string, 
   targetPrice: number, 
   phoneNumber: string) => {
-  console.log(symbol);
-  console.log(targetPrice);
-  console.log(phoneNumber);
   return function(dispatch: Dispatch<IState>): Promise<boolean> {
     let header;
       header = new Headers({"Content-Type": "application/json"});
@@ -123,7 +119,7 @@ export const addWatchAsync =
     );
 
     let watchRequest = new Request(
-      "https://stock-watcher-app.herokuapp.com/notifications/watchprice", {
+      "/notifications/watchprice", {
       method: "POST",
       body: bodyBlob,
       headers: header
@@ -134,7 +130,6 @@ export const addWatchAsync =
         return res.status;
       })
       .then(status => {
-        console.log(status);
         if (status === 201) {
           dispatch<ToggleModalDisplay>({
             type: TOGGLE_MODAL
