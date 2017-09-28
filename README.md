@@ -49,6 +49,7 @@ Development Tools
 * Webpack
 * SCSS
 * Jest
+* Travis CI
 
 Architecture
 -
