@@ -9,6 +9,7 @@ using Newtonsoft;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using StockWatcher.Model;
 using StockWatcher.Model.Schemas;
 using StockWatcher.Model.Services;
 
@@ -17,9 +18,11 @@ namespace StockWatcher.Controllers
     public class SearchController : Controller
     {
         private readonly IQueryCompanyService service;
-        public SearchController(IQueryCompanyService _service)
+        private readonly StockDbContext context;
+        public SearchController(StockDbContext _context)
         {
-            service = _service;
+            context = _context;
+            service = new QueryCompanyService(context);
         }
 
         [HttpGet("/company")]

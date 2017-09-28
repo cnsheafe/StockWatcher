@@ -22,10 +22,10 @@ namespace StockWatcher.Model.Services
 {
     public class StockRequestService : IStockRequestService
     {
-        private readonly StockDbContext context;
+        private readonly IStockDbContext context;
         private StockRequestHelper helper;
         private LimitCountChecker checker;
-        public StockRequestService(StockDbContext _context)
+        public StockRequestService(IStockDbContext _context)
         {
             context = _context;
             helper = new StockRequestHelper(_context);
@@ -88,6 +88,10 @@ namespace StockWatcher.Model.Services
 
         public async Task<Boolean> QueryStock(Stock stock, string jobId)
         {
+            if (String.Compare(jobId,"no_id") == 0)
+            {
+                jobId = Guid.NewGuid().ToString();
+            }
             using (var client = new HttpClient())
             {
                 string responseBody = "";
@@ -136,8 +140,11 @@ namespace StockWatcher.Model.Services
                     new StockRequestHelper(context).NotifyUsers(stock, openPrice);
                     RecurringJob.RemoveIfExists(jobId);
                     RemoveRequest(stock);
-                    Console.WriteLine("Finished sending notification");
                     return true;
+                }
+                else
+                {
+                    RecurringJob.AddOrUpdate(jobId, () => QueryStock(stock, jobId), Cron.Minutely);
                 }
                 return false;
             }

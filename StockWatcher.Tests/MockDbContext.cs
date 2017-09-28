@@ -1,22 +1,21 @@
 using Microsoft.EntityFrameworkCore;
-
 using StockWatcher.Model.Schemas;
 
-namespace StockWatcher.Model
+namespace StockWatcher.Model.Services.Tests
 {
-    public class StockDbContext : DbContext, IStockDbContext
+    public class MockDbContext: DbContext, IStockDbContext
     {
-        public StockDbContext(DbContextOptions<StockDbContext> options) : base(options)
+        public MockDbContext(DbContextOptions<MockDbContext> options) : base(options)
         {
-            var db = base.Database;
-            db.OpenConnection();
-            db.ExecuteSqlCommand(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"" ");
-            db.CloseConnection();
+            base.Database.OpenConnection();
+            base.Database.EnsureCreated();
+            base.Database.Migrate();
+            
         }
-
         public DbSet<Company> Companies { get; set; }
         public DbSet<RequestRecord> Requests { get; set; }
         public DbSet<LimitCount> LimitCounts { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Company>(entity =>
@@ -45,15 +44,6 @@ namespace StockWatcher.Model
 
             });
         }
-    }
 
-    public interface IStockDbContext
-    {
-        DbSet<Company> Companies { get; }
-        DbSet<RequestRecord> Requests { get; }
-        DbSet<LimitCount> LimitCounts { get; }
-
-        int SaveChanges();
-       
     }
 }

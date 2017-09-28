@@ -10,8 +10,8 @@ namespace StockWatcher.Model.Services
 {
     public class QueryCompanyService : IQueryCompanyService
     {
-        private readonly StockDbContext context;
-        public QueryCompanyService(StockDbContext _context)
+        private readonly IStockDbContext context;
+        public QueryCompanyService(IStockDbContext _context)
         {
             context = _context;
         }

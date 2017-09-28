@@ -8,18 +8,29 @@ namespace StockWatcher.Model.Services.Tests
 {
     public class QueryCompanyServiceShould
     {
-        private StockDbContext context;
+        private MockDbContext context;
+        private IQueryCompanyService service;
+        private List<Company> mockCompanies;
 
         public QueryCompanyServiceShould()
         {
-            string[] args = {Environment.GetEnvironmentVariable("DATABASE_URL")};
-            context = new StockDbContextFactory().CreateDbContext(args);
+            context = new MockDbContextFactory().CreateDbContext(null);
+            service = new QueryCompanyService(context);
+            var baseCompany = new Company{};
+            mockCompanies = new List<Company> 
+            {
+                new Company {Symbol="MSFT", Name="Microsoft"},
+                new Company {Symbol="AMSF", Name="Amerisafe"},
+                new Company {Symbol="MSFG", Name="Main Source Financial Group"}
+            };
+
+            context.Companies.AddRange(mockCompanies);
+            context.SaveChanges();
         }
 
         [Fact]
         public void ReturnEnumberableOfCompanies()
         {
-            var service = new QueryCompanyService(context);
             var query = new Query
             {
                 SearchPhrase="msf",

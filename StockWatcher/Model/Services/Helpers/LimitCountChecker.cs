@@ -15,9 +15,9 @@ namespace StockWatcher.Model.Services.Helpers
 {
     public class LimitCountChecker
     {
-        private StockDbContext context;
+        private IStockDbContext context;
         private int limit = 5;
-        public LimitCountChecker(StockDbContext _context)
+        public LimitCountChecker(IStockDbContext _context)
         {
             context = _context;
         }
@@ -55,7 +55,8 @@ namespace StockWatcher.Model.Services.Helpers
             }
             catch (DbUpdateException dbException)
             {
-                var exception = (Npgsql.PostgresException)dbException.InnerException;
+                // var exception = (Npgsql.PostgresException)dbException.InnerException;
+                var exception = dbException.InnerException;
                 Console.WriteLine(exception.Message);
 
                 return false;

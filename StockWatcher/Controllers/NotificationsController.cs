@@ -13,6 +13,7 @@ using Twilio;
 using Twilio.Rest.Notify.V1.Service;
 using Twilio.Types;
 
+using StockWatcher.Model;
 using StockWatcher.Model.Services;
 using StockWatcher.Model.Schemas;
 
@@ -21,26 +22,28 @@ namespace StockWatcher.Controllers
     public class NotificationsController : Controller
     {
         private readonly IStockRequestService requestService;
-        public NotificationsController(IStockRequestService _requestService)
+        private StockDbContext context;
+        public NotificationsController(StockDbContext _context)
         {
-            requestService = _requestService;
+            requestService = new StockRequestService(_context);
         }
 
         [HttpPost]
-        public void WatchPrice([FromBody]Stock stock)
+        public async Task WatchPrice([FromBody]Stock stock)
         {
             if (ModelState.IsValid)
             {
                 if (requestService.AddRequest(stock))
                 {
-                    var jobId = Guid.NewGuid().ToString();
-                    RecurringJob.AddOrUpdate<IStockRequestService>(
-                        jobId,
-                        service =>
-                        service.QueryStock(stock, jobId),
-                        Cron.Minutely()
-                    );
-                    Response.StatusCode = 201;
+                    bool success = await requestService.QueryStock(stock, "no_id");
+                    if(success)
+                    {
+                        Response.StatusCode = 201;
+                    }
+                    else
+                    {
+                        Response.StatusCode = 500;
+                    }
                 }
                 else
                 {
