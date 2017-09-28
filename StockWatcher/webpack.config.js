@@ -77,7 +77,7 @@ module.exports = env => {
         ]
     });
 
-    const clientBundleOutputDir = path.normalize(`${__dirname}/wwwroot/dist/app`);
+    const clientBundleOutputDir = path.normalize(`${__dirname}/wwwroot/dist`);
     const clientConfig = merge(sharedConfig(), {
         entry: {
             "client": path.normalize(`${appSettings["input-dir"]}/boot-client.tsx`)
@@ -91,7 +91,13 @@ module.exports = env => {
                 filename: '[file].map', // Remove this line if you prefer inline source maps
                 moduleFilenameTemplate: path.relative(clientBundleOutputDir, '[resourcePath]') // Point sourcemap entries to the original file locations on disk
             }) : 
-            new webpack.optimize.UglifyJsPlugin(),
+            new webpack.optimize.UglifyJsPlugin({
+                comments: false,
+                compress: {
+                    warnings: false
+                },
+                drop_console: true
+            }),
             new webpack.DllReferencePlugin({
                 context: __dirname,
                 manifest: require(`${clientBundleOutputDir}/vendor-manifest.json`)

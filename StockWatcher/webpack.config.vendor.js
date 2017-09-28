@@ -38,14 +38,20 @@ module.exports = (env) => {
     };
 
     const clientBundleConfig = merge(sharedConfig, {
-        output: { path: path.join(__dirname, 'wwwroot', 'dist/app') },
+        output: { path: path.join(__dirname, 'wwwroot', 'dist') },
         plugins: [
             new webpack.DllPlugin({
-                path: path.join(__dirname, 'wwwroot', 'dist/app', '[name]-manifest.json'),
+                path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),
                 name: '[name]_[hash]'
             })
         ].concat(isDevBuild ? [] : [
-            new webpack.optimize.UglifyJsPlugin()
+            new webpack.optimize.UglifyJsPlugin({
+                comments: false,
+                compress: {
+                    warnings: false
+                },
+                drop_console: true
+            })
         ])
     });
 
