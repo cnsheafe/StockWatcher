@@ -22,10 +22,10 @@ namespace StockWatcher.Model.Services
 {
     public class StockRequestService : IStockRequestService
     {
-        private readonly StockDbContext context;
+        private readonly IStockDbContext context;
         private StockRequestHelper helper;
         private LimitCountChecker checker;
-        public StockRequestService(StockDbContext _context)
+        public StockRequestService(IStockDbContext _context)
         {
             context = _context;
             helper = new StockRequestHelper(_context);

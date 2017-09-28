@@ -4,7 +4,7 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model
 {
-    public class StockDbContext : DbContext
+    public class StockDbContext : DbContext, IStockDbContext
     {
         public StockDbContext(DbContextOptions<StockDbContext> options) : base(options)
         {
@@ -45,5 +45,15 @@ namespace StockWatcher.Model
 
             });
         }
+    }
+
+    public interface IStockDbContext
+    {
+        DbSet<Company> Companies { get; }
+        DbSet<RequestRecord> Requests { get; }
+        DbSet<LimitCount> LimitCounts { get; }
+
+        int SaveChanges();
+       
     }
 }

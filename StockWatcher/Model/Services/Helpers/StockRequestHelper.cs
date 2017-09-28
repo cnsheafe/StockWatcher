@@ -17,9 +17,9 @@ namespace StockWatcher.Model.Services.Helpers
         private string serviceSid;
 
 
-        private StockDbContext context;
+        private IStockDbContext context;
 
-        public StockRequestHelper(StockDbContext _context)
+        public StockRequestHelper(IStockDbContext _context)
         {
             context = _context;
             accountSid = Environment.GetEnvironmentVariable(
