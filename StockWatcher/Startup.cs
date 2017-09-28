@@ -100,11 +100,12 @@ namespace StockWatcher
                 config.UsePostgreSqlStorage(connectionString)
             );
 
+
             services.AddDbContext<StockDbContext>(options =>
                 options.UseNpgsql(connectionString)
             );
 
-            services.AddTransient<IStockRequestService, StockRequestService>();
+            services.AddScoped<IStockRequestService, StockRequestService>();
             services.AddTransient<IQueryCompanyService, QueryCompanyService>();
             services.AddTransient<IAlphaVantageService, AlphaVantageService>();
         }
