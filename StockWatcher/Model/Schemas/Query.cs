@@ -8,6 +8,7 @@ namespace StockWatcher.Model.Schemas
 {
     public class Query
     {
+        [Required]
         public string SearchPhrase { get; set; }
 
         public bool IsSymbol { get; set; }
