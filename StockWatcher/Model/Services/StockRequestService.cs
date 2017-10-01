@@ -31,6 +31,7 @@ namespace StockWatcher.Model.Services
             helper = new StockRequestHelper(_context);
             checker = new LimitCountChecker(_context);
         }
+        
         public bool AddRequest(Stock stock)
         {
             bool success = true;

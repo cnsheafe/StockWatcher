@@ -10,6 +10,7 @@ export interface SearchProps {
   searchResults: Array<Company>
 }
 
+// Container Component for searching company stocks
 export class Search extends React.Component<SearchProps, {}> {
 
   suggestionHandler(event: React.MouseEvent<HTMLUListElement>) {
@@ -49,7 +50,7 @@ export class Search extends React.Component<SearchProps, {}> {
       </section>
     );
   }
-
+  // Attaches rxjs to the search element for debounce requests
   componentDidMount() {
     const searchElement = document.getElementById("search-companies") as HTMLInputElement;
 
@@ -72,6 +73,8 @@ export class Search extends React.Component<SearchProps, {}> {
   }
 }
 
+// Helper function for matching stock symbols
+// TODO: Move into an action
 function fetchCompanies(searchPhrase: string, isSymbol: boolean): Promise<JSON> {
   const headers = new Headers({
     "Accept": "application/json"

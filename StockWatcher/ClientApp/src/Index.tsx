@@ -9,7 +9,7 @@ import App from "./components/App";
 
 import store from "./store/store";
 
-
+// Returns JSX depending on whether the code is server-side or client-side
 export function Index(isForServer: boolean, params?: BootFuncParams): JSX.Element {
   let index: JSX.Element;
 
