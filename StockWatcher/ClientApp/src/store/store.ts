@@ -30,6 +30,7 @@ export interface IState {
   modalSymbol: string
 }
 
+// TypeCheck on the reducer
 type ValidAction = SearchResult | AddGraph | RemoveGraph | ToggleModalDisplay;
 
 export function reducer(state: IState, action: ValidAction): IState {
@@ -38,6 +39,7 @@ export function reducer(state: IState, action: ValidAction): IState {
       const searchAction = <SearchResult>action;
       return Object.assign({}, state, { searchResults: searchAction.results });
     case ADD_GRAPH:
+      // Assigns a graph an id and index and then adds to the list
       const graphAction = <AddGraph>action;
       const count: number = state.graphs.length;
       const index: number = count > 0 ? state.graphs[count - 1].index + 1 : 0;

@@ -1,5 +1,6 @@
 import * as React from "react";
 
+// Presentation Component for references to APIs and Github repo
 export class Footer extends React.Component {
   render() {
     return (

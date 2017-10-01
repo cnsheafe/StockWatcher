@@ -9,6 +9,7 @@ export interface ModalProps {
   modalSymbol: string
 }
 
+// Container Component for setting up an SMS Alert
 export class Modal extends React.Component<ModalProps, {}> {
   private bodyElement: HTMLElement;
   private keyCallback: (event: KeyboardEvent)  => void;
@@ -71,6 +72,7 @@ export class Modal extends React.Component<ModalProps, {}> {
     )
   }
 
+  // Attach eventlisteners to determine when to hide modal
   componentDidMount() {
     this.bodyElement = document.getElementsByTagName("body")[0] as HTMLElement;
    
@@ -87,6 +89,10 @@ export class Modal extends React.Component<ModalProps, {}> {
       }
     }
 
+    /*
+    Creates a blacklist of targets
+    to prevent modal from hiding
+    */ 
     this.mouseCallback = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       
@@ -115,7 +121,6 @@ export class Modal extends React.Component<ModalProps, {}> {
   }
 
   componentDidUpdate() {
-
     this.bodyElement.classList.toggle(this.dimCSS);
     if (this.props.showModal) {
       this.bodyElement.addEventListener("keyup", this.keyCallback);

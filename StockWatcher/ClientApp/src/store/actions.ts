@@ -47,7 +47,8 @@ export const ListSearchResults: ActionCreator<SearchResult> =
       results: results
     }
   }
-// Action for Adding a Graph
+
+// End result dispatches AddGraph
 export const addGraphAsync = 
   (company: Company) => {
 
@@ -99,6 +100,8 @@ export const toggleModalDisplay: ActionCreator<ToggleModalDisplay> = (symbol?: s
     symbol: symbol
   }
 }
+
+// End result returns a boolean and dispatches a ToggleModalAction
 export const addWatchAsync = 
   (symbol: string, 
   targetPrice: number, 
