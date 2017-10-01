@@ -22,7 +22,7 @@ namespace StockWatcher.Model.Services
             IEnumerable<Company> companies = new List<Company>();
             if (query.SearchPhrase.Length == 0)
             {
-                return companies;
+                return null;
             }
 
             if (query.IsSymbol)

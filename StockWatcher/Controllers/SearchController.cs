@@ -28,6 +28,10 @@ namespace StockWatcher.Controllers
         [HttpGet("/company")]
         public IActionResult GetCompany([FromQuery]Query query)
         {
+            if(!ModelState.IsValid) 
+            {
+                return null;
+            }
             JsonResult apiResult = Json(service.SearchCompanies(query));
             if(apiResult == null) 
             {

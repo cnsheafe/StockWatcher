@@ -22,6 +22,7 @@ export class Search extends React.Component<SearchProps, {}> {
     }
     store.dispatch(addGraphAsync(company));
   }
+
   render() {
     const suggestions = this.props.searchResults.map<JSX.Element>((company, index) =>
       <li 
@@ -52,13 +53,22 @@ export class Search extends React.Component<SearchProps, {}> {
   componentDidMount() {
     const searchElement = document.getElementById("search-companies") as HTMLInputElement;
 
+    searchElement.addEventListener("keyup", (key) => { 
+      if (key.keyCode === 13) {
+        searchElement.blur();
+      }
+    });
+
     Rx.Observable.fromEvent(searchElement, "keyup")
       .debounceTime(300)
-      .subscribe(() =>
+      .subscribe(() => {
+        if(searchElement.value.length > 0) {
         fetchCompanies(searchElement.value, true)
           .then(json => {
             store.dispatch(ListSearchResults(json));
-          }));
+          })
+        }
+    });
   }
 }
 

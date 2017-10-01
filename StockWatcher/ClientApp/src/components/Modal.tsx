@@ -54,12 +54,13 @@ export class Modal extends React.Component<ModalProps, {}> {
             max="2000"
             className="modal-price" 
             id="modal-price"
-            placeholder="10.00" />
+            placeholder="10.00"
+            required />
           <label htmlFor="modal-phone">Phone Number</label>
           <div id="modal-phone" className="modal-phone">
-            <input id="phone-area-code" type="tel" maxLength={3} placeholder="555"/>
-            <input id="phone-field-1" type="tel" maxLength={3} placeholder="123"/>
-            <input id="phone-field-2" type="tel" maxLength={4} placeholder="4567"/>
+            <input id="phone-area-code" type="tel" maxLength={3} placeholder="555" required/>
+            <input id="phone-field-1" type="tel" maxLength={3} placeholder="123" required/>
+            <input id="phone-field-2" type="tel" maxLength={4} placeholder="4567" required/>
           </div>
           <button 
             type="submit" 
