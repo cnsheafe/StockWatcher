@@ -3,6 +3,7 @@ StockWatcher
 
 View stock prices from different companies and set SMS Alerts when stocks reach a certain price.
 
+![Graph of Microsoft Stock](/readme-assets/stockwatcher-graph.png)
 About
 -
 
