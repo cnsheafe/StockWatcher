@@ -9,12 +9,19 @@ About
 
 This repositiory contains the full-stack monolith of StockWatcher. For the landing page, go [here](https://cnsheafe.github.io/StockWatcher-Client/). For the repository of just the front-end go [here](https://github.com/cnsheafe/StockWatcher-Client).
 
-Features
+User Features
 -
 
 * NASDAQ stock symbol lookup
 * Graphs generated from company stock price history
 * Custom SMS Alerts
+
+Technical Features
+-
+
+* Server-side rendering for faster display
+* Background Scheduler for alerts
+* Docker for portability
 
 Tech Stack
 -
@@ -63,18 +70,19 @@ the controllers.
 The view is a simple Razor page that forms the React SPA using server-side prerendering.
 The entire monolith is wrapped within a Docker container for portability.
 
-
 Instructions for Development
 -
+
 Developing StockWatcher requires ASPNET Core v2.0, Node.js, Webpack, Sass/SCSS, and Typescript.
 
 Always start with the following:
+
 ```bash
 npm install
 dotnet restore
 ```
 
-<!-- Need to include instructions for postgres dump -->
+For Postgres, copy the processed csv of companies to your database.
 
 To view in browser use a .NET Core debugger such as in VS Code or Visual Studio.
 
