@@ -32,6 +32,12 @@ export class Modal extends React.Component<ModalProps, {}> {
             .removeEventListener("keyup", this.keyCallback);
           this.bodyElement
             .removeEventListener("click", this.mouseCallback);
+
+          document.getElementsByClassName("error")[0].classList.remove("hide");
+
+        }
+        else {
+          document.getElementsByClassName("error")[0].classList.remove("hide");
         }
       });
   }
@@ -59,9 +65,12 @@ export class Modal extends React.Component<ModalProps, {}> {
             required />
           <label htmlFor="modal-phone">Phone Number</label>
           <div id="modal-phone" className="modal-phone">
-            <input id="phone-area-code" type="tel" maxLength={3} placeholder="555" required/>
-            <input id="phone-field-1" type="tel" maxLength={3} placeholder="123" required/>
-            <input id="phone-field-2" type="tel" maxLength={4} placeholder="4567" required/>
+            <input id="phone-area-code" type="tel" pattern="([0-9]){3}" maxLength={3} placeholder="555" required/>
+            <input id="phone-field-1" type="tel" pattern="([0-9]){3}" maxLength={3} placeholder="123" required/>
+            <input id="phone-field-2" type="tel"  pattern="([0-9]){4}" maxLength={4} placeholder="4567" required/>
+          </div>
+          <div className="error hide">
+            <p>One or more fields are invalid! Correct and please try again!</p>
           </div>
           <button 
             type="submit" 
@@ -75,6 +84,22 @@ export class Modal extends React.Component<ModalProps, {}> {
   // Attach eventlisteners to determine when to hide modal
   componentDidMount() {
     this.bodyElement = document.getElementsByTagName("body")[0] as HTMLElement;
+    const areaCodeInput = document.getElementById("phone-area-code") as HTMLInputElement;
+    const fieldOneInput = document.getElementById("phone-field-1") as HTMLInputElement;
+    const fieldTwoInput = document.getElementById("phone-field-2") as HTMLInputElement;
+
+
+    areaCodeInput.addEventListener("keyup", () => {
+      if(areaCodeInput.value.length === areaCodeInput.maxLength) {
+        fieldOneInput.focus();
+      }
+    });
+
+    fieldOneInput.addEventListener("keyup", () => {
+      if(fieldOneInput.value.length === fieldOneInput.maxLength) {
+        fieldTwoInput.focus();
+      }
+    });
    
     this.keyCallback = (event: KeyboardEvent) => {
       // Look for ESC Key
