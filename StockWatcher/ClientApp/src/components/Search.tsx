@@ -53,6 +53,7 @@ export class Search extends React.Component<SearchProps, {}> {
   // Attaches rxjs to the search element for debounce requests
   componentDidMount() {
     const searchElement = document.getElementById("search-companies") as HTMLInputElement;
+    searchElement.onfocus = () => searchElement.value="";
 
     searchElement.addEventListener("keyup", (key) => { 
       if (key.keyCode === 13) {
