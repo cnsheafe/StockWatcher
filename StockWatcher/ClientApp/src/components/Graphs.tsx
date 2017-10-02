@@ -17,6 +17,7 @@ class Graphs extends React.Component<GraphsProps, {}> {
     let target = event.target as HTMLElement;
     let graphId = target.dataset.id;
     store.dispatch(removeGraph(graphId));
+    document.getElementById("search-companies").focus();
   }
 
   // Show modal after clicking on "Watch"
@@ -26,7 +27,7 @@ class Graphs extends React.Component<GraphsProps, {}> {
 
   render() {
 
-    const graphs = this.props.graphs.map<JSX.Element>((graph: Graph, index: number) => {
+    let graphs = this.props.graphs.map<JSX.Element>((graph: Graph, index: number) => {
       return (
         <li key={index} className="graphs-list-item">
           <canvas id={graph.graphId}></canvas>
@@ -43,6 +44,8 @@ class Graphs extends React.Component<GraphsProps, {}> {
         </li>
       );
     });
+
+    graphs = graphs.reverse();
 
     return (
       <ul id="graphs" className={graphs.length > 0 ? "graphs-list" : "hide"}>
