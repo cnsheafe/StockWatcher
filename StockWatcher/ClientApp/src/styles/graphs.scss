@@ -8,9 +8,9 @@
     list-style: none;
     background-color: white;
     margin: auto;
-    margin-top: 30px;
     width: 80vw;
     border: 3px solid $accent-color;
+    margin-top: 30px;
     margin-bottom: 60px;
 }
 
@@ -20,6 +20,8 @@
     border-top: 2px solid gray;
     height: 90vh;
     padding-bottom: 40px;
+    margin-bottom: 20px;
+
     @media screen and (min-height: $small) {
         height: 80vh;
     }
@@ -43,6 +45,8 @@
             display: flex;
             flex-direction: row;
             align-items: center;
+            padding-top: 3px;
+            padding-bottom: 3px;
             margin-left: 5px;
             cursor: pointer;
             font-size: 10px;
