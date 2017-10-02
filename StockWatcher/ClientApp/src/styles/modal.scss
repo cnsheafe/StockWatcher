@@ -47,11 +47,11 @@
         -webkit-appearance: textfield;
     }
     .modal-phone {
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         display: flex;
         flex-direction: row;
         input {
-            margin-right: 5px;
+            margin-right: 15px;
         }
         input:first-child {
             width: 15%;
@@ -63,16 +63,41 @@
             width: 25%;
         }
     }
+    button {
+        padding-bottom: 8px;
+        padding-top: 8px;
+        border: 3px solid $accent-color;
+        border-radius: 5px;
+        background-color: white;
+        color: black;
+        font-family: "Lato", sans-serif;
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+    button:hover {
+        background-color: $hover-color;
+    }
 }
 
 .dim-background::after {
     content: "";
     display: block;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
     z-index: 50;
     background-color: rgba(#000000, 0.4);
+}
+
+.error {
+    font-family: "Lato", sans-serif;
+    font-size: 16px;
+    color: red;
+    margin-bottom: 10px;
+    text-align: center;
+    p {
+        margin: 0;
+    }
 }
