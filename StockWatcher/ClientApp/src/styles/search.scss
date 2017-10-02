@@ -53,6 +53,7 @@
         border-width: 2px;
         background-color: white;
         font-size: 4.0vw;
+        margin-bottom: 30px;
         @media screen and (min-width: $small) {
             font-size: 3.0vw;
         }
@@ -61,7 +62,7 @@
         }
          :hover {
             cursor: pointer;
-            background-color: #BDBDBD;
+            background-color: $hover-color;
         }
         .search-suggestions-item {
             display: flex;
@@ -70,7 +71,6 @@
             padding-top: 8px;
             align-items: center;
             .material-icons.purple700 {
-                // color: $accent-purple-dark-color;
                 color: $accent-purple-light-color;
                 margin-right: 8px;
                 margin-left: 5px;
