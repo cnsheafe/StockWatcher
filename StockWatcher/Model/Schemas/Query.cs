@@ -11,7 +11,5 @@ namespace StockWatcher.Model.Schemas
         [Required]
         public string SearchPhrase { get; set; }
 
-        public bool IsSymbol { get; set; }
-
     }
 }

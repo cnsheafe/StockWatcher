@@ -33,8 +33,7 @@ namespace StockWatcher.Model.Services.Tests
         {
             var query = new Query
             {
-                SearchPhrase="msf",
-                IsSymbol=true
+                SearchPhrase="msf"
             };
             IEnumerable<Company> companies = service.SearchCompanies(query);
 
