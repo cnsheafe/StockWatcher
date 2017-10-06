@@ -33,8 +33,7 @@ export class Modal extends React.Component<ModalProps, {}> {
           this.bodyElement
             .removeEventListener("click", this.mouseCallback);
 
-          document.getElementsByClassName("error")[0].classList.remove("hide");
-
+          document.getElementsByClassName("error")[0].classList.add("hide");
         }
         else {
           document.getElementsByClassName("error")[0].classList.remove("hide");
