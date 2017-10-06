@@ -26,6 +26,11 @@
     @media screen and (min-width: $large) {
         width: 30vw;
     }
+
+    @media screen and (max-width: 320px) {
+        top: 10vh;
+    }
+
     .modal-form {
         display: flex;
         flex-direction: column;
