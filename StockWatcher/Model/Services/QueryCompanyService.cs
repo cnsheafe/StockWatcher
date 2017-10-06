@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -25,20 +26,17 @@ namespace StockWatcher.Model.Services
                 return null;
             }
 
-            if (query.IsSymbol)
+            var searchPhraseBlocks = query.SearchPhrase.Split(" ");
+            var newSearchPhrase = new StringBuilder();
+            foreach (var block in searchPhraseBlocks)
             {
-                companies = table
-                    .Where(c => c.Symbol.Contains(query.SearchPhrase.ToUpper()))
-                    .Take(5)
-                    .AsEnumerable();
+                var newBlock = block.Substring(0, 1).ToUpper() + block.Substring(1) + " ";
+                newSearchPhrase.Append(newBlock);
             }
-            else
-            {
-                companies = table
-                    .Where(c => c.Name.Contains(query.SearchPhrase))
-                    .Take(5)
-                    .AsEnumerable();
-            }
+            companies = table
+                .Where(c => c.Symbol.Contains(query.SearchPhrase.ToUpper()) || c.Name.Contains(newSearchPhrase.ToString().TrimEnd()))
+                .Take(5)
+                .AsEnumerable();
             context.SaveChanges();
 
             return companies;
