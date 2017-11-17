@@ -16,7 +16,7 @@ namespace StockWatcher.Model.Services
 {
     public class AlphaVantageService : IAlphaVantageService
     {
-        public async Task<IEnumerable<DataPoint>> RequestStockPrice(string StockSymbol)
+        public async Task<IEnumerable<DataPoint>> RequestStockPrice(string stockSymbol)
         {
             using (var client = new HttpClient())
             {
@@ -26,7 +26,7 @@ namespace StockWatcher.Model.Services
                 // Describes URI query terms for Alphavantage API
                 var queryTerms = new StringBuilder();
                 queryTerms.Append("function=time_series_daily&");
-                queryTerms.Append($"symbol={StockSymbol}&");
+                queryTerms.Append($"symbol={stockSymbol.ToLower()}&");
                 queryTerms.Append("interval=1min&");
                 queryTerms.Append($"apikey={AV_KEY}");
 
