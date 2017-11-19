@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 using StockWatcher.Model.Services;
+using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Controllers
 {
@@ -15,11 +16,13 @@ namespace StockWatcher.Controllers
             service = context;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("stockprice")]
-        public IActionResult Index([FromQuery]string StockSymbol)
+        public IActionResult Index([FromBody]ListOfSymbols listOfSymbols)
         {
-            var data = service.RequestStockPrice(StockSymbol, TimeSeries.Intraday, IntervalTypes.OneMinute);
+            var data = service.RequestStockPrices(
+                listOfSymbols.Symbols, TimeSeries.Intraday, IntervalTypes.OneMinute
+            );
             return Json(data.Result);
         }
     }
