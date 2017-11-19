@@ -23,22 +23,34 @@ namespace StockWatcher.Model.Services
             APIKEY = AVKey;
         }
 
+        /// <summary>
+        /// Sends HTTP Request(s) to AlphaVantage API and returns a dictionary
+        /// with stock symbol and its associated price history.
+        /// </summary>
         public async Task<Dictionary<string, DataPoint[]>> RequestStockPrices(
             string[] symbols, TimeSeries timeSeries, IntervalTypes interval
         )
         {
-            var allData = new Dictionary<string, DataPoint[]> { };
+            var responseBodies = new List<Task<string>>();
+            var stockPrices = new Dictionary<string, DataPoint[]> { };
             foreach (string symbol in symbols)
             {
                 Uri uri = BuildUri(timeSeries, symbol);
-                string responseBody = await FetchStockHistory(uri);
-                DataPoint[] data = ParseTimeSeriesData(responseBody, timeSeries);
-                allData.Add(symbol, data);
+                responseBodies.Add(FetchStockHistory(uri));
             }
 
-            return allData;
+            string[] allResponses = await Task.WhenAll(responseBodies);
+            for (int i = 0; i < allResponses.Length; i++)
+            {
+                DataPoint[] data = ParseTimeSeriesData(allResponses[i], timeSeries);
+                stockPrices.Add(symbols[i], data);
+            }
+            return stockPrices;
         }
 
+        /// <summary>
+        /// Makes HTTP Request to provide URI.
+        /// </summary>
         protected virtual async Task<string> FetchStockHistory(Uri uri)
         {
             using (var client = new HttpClient())
@@ -57,6 +69,9 @@ namespace StockWatcher.Model.Services
             }
         }
 
+        /// <summary>
+        /// Custom parser for AlphaVantage API response body.
+        /// </summary>
         protected DataPoint[] ParseTimeSeriesData(
             string dataString, TimeSeries timeSeries, IntervalTypes interval = IntervalTypes.OneMinute
         )
@@ -112,6 +127,9 @@ namespace StockWatcher.Model.Services
 
             return history;
         }
+        /// <summary>
+        /// Create formatted URI for AlphaVantage API Time-series call.
+        /// </summary>
         protected Uri BuildUri(
             TimeSeries timeSeriesType, string symbol,
             IntervalTypes interval = IntervalTypes.OneMinute
@@ -144,6 +162,9 @@ namespace StockWatcher.Model.Services
             avUri.Query = queryTerms.ToString();
             return avUri.Uri;
         }
+        /// <summary>
+        /// Constructs the query terms for AlphaVantage API.
+        /// </summary>
         private StringBuilder BuildQuery(
             string functionType, string symbol, int interval = 0
         )
@@ -162,6 +183,11 @@ namespace StockWatcher.Model.Services
 
     }
 }
+
+/// <summary>
+/// Represents an interface for using the
+/// the AlphaVantage API.
+/// </summary>
 public interface AlphaVantage
 {
     string APIKEY { get; }
@@ -169,8 +195,16 @@ public interface AlphaVantage
         string[] symbol, TimeSeries type, IntervalTypes interval
     );
 }
+
+/// <summary>
+/// Represents options available for the AlphaVantage API Time-series.
+/// </summary>
 public enum TimeSeries { Intraday, Daily, Weekly, Monthly }
 
+/// <summary>
+/// Represents interval options when using AlphaVantage API Intraday
+/// Time-Series.
+/// </summary>
 public enum IntervalTypes
 {
     OneMinute = 1,
