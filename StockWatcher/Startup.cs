@@ -107,7 +107,8 @@ namespace StockWatcher
 
             services.AddScoped<IStockRequestService, StockRequestService>();
             services.AddTransient<IQueryCompanyService, QueryCompanyService>();
-            services.AddTransient<IAlphaVantageService, AlphaVantageService>();
+            services.AddTransient<AlphaVantage, AlphaVantageService>
+            (avService => new AlphaVantageService(Environment.GetEnvironmentVariable("AV_KEY")));
         }
 
     }
