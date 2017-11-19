@@ -9,17 +9,17 @@ namespace StockWatcher.Controllers
 {
     public class StockPriceController : Controller
     {
-        private IAlphaVantageService service;
-        public StockPriceController(IAlphaVantageService _service)
+        private AlphaVantage service;
+        public StockPriceController(AlphaVantage context)
         {
-            service = _service;
+            service = context;
         }
 
         [HttpGet]
         [Route("stockprice")]
         public IActionResult Index([FromQuery]string StockSymbol)
         {
-            var data = service.RequestStockPrice(StockSymbol);
+            var data = service.RequestStockPrice(StockSymbol, TimeSeries.Intraday, IntervalTypes.OneMinute);
             return Json(data.Result);
         }
     }
