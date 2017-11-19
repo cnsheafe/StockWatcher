@@ -1,6 +1,6 @@
 import { ActionCreator, Dispatch } from "redux";
 import thunk, { ThunkAction } from "redux-thunk";
-require("isomorphic-fetch");
+const fetch = require("isomorphic-fetch");
 
 import { Company, Graph } from "./schema";
 import { IState } from "./store";
@@ -53,27 +53,31 @@ export const addGraphAsync =
   (company: Company) => {
 
     return function(dispatch: Dispatch<IState>) {
-      const headers = new Headers({
-        "Accept": "application/json"
-      });
-      let stockRequest = new Request(
-        `/stockprice/?stocksymbol=${company.symbol}`,
-        { 
-          method: "GET",
-          headers: headers
-        });
-      
-      return fetch(stockRequest)
+      const url = '/stockprice';
+      const options = {
+        method: 'POST',
+        cache: 'default',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          symbols: [company.symbol]
+        })
+      };
+
+      return fetch(url,options)
         .then(res => {
           return res.json();
         })
-        .then((json) => {
+        .then((results) => {
+          const c = results[company.symbol.toUpperCase()];
           let dataPoints = [];
           let labels = [];
 
-          for (var i = json.length - 1; i >= 0 ; i--) {
-            dataPoints.push(json[i].price);
-            labels.push(json[i].timeStamp);
+          for (var i = c.length - 1; i >= 0 ; i--) {
+            dataPoints.push(c[i].price);
+            labels.push(c[i].timeStamp);
           }
 
           dispatch<AddGraph>({
