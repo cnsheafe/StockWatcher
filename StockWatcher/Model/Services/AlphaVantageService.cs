@@ -23,14 +23,20 @@ namespace StockWatcher.Model.Services
             APIKEY = AVKey;
         }
 
-        public async Task<DataPoint[]> RequestStockPrice(
-            string symbol, TimeSeries timeSeries, IntervalTypes interval
+        public async Task<Dictionary<string, DataPoint[]>> RequestStockPrices(
+            string[] symbols, TimeSeries timeSeries, IntervalTypes interval
         )
         {
-            Uri uri = BuildUri(timeSeries, symbol);
-            string responseBody = await FetchStockHistory(uri);
+            var allData = new Dictionary<string, DataPoint[]> { };
+            foreach (string symbol in symbols)
+            {
+                Uri uri = BuildUri(timeSeries, symbol);
+                string responseBody = await FetchStockHistory(uri);
+                DataPoint[] data = ParseTimeSeriesData(responseBody, timeSeries);
+                allData.Add(symbol, data);
+            }
 
-            return ParseTimeSeriesData(responseBody, timeSeries);
+            return allData;
         }
 
         protected virtual async Task<string> FetchStockHistory(Uri uri)
@@ -159,8 +165,8 @@ namespace StockWatcher.Model.Services
 public interface AlphaVantage
 {
     string APIKEY { get; }
-    Task<DataPoint[]> RequestStockPrice(
-        string symbol, TimeSeries type, IntervalTypes interval
+    Task<Dictionary<string, DataPoint[]>> RequestStockPrices(
+        string[] symbol, TimeSeries type, IntervalTypes interval
     );
 }
 public enum TimeSeries { Intraday, Daily, Weekly, Monthly }
