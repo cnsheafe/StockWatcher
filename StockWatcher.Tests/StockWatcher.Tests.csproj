@@ -10,8 +10,16 @@
     <PackageReference Include="Moq" Version="4.7.99" />
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
   </ItemGroup>
+  <Target Name="CopySampleData" BeforeTargets="Build">
+    <ItemGroup>
+      <MySourceFiles Include="sample-intraday.json"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(MySourceFiles)" DestinationFolder="bin/Debug/assets"/>
+  </Target>
   <ItemGroup>
     <ProjectReference Include="..\StockWatcher\StockWatcher.csproj" />
   </ItemGroup>
+
 </Project>
