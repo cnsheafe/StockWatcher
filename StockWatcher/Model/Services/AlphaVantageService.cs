@@ -23,39 +23,23 @@ namespace StockWatcher.Model.Services
             APIKEY = AVKey;
         }
 
-        public async Task<string> FetchStockHistory(
-            string symbol,
-            TimeSeries timeSeries = TimeSeries.Intraday,
-            IntervalTypes interval = IntervalTypes.OneMinute
+        public async Task<DataPoint[]> RequestStockPrice(
+            string symbol, TimeSeries timeSeries, IntervalTypes interval
         )
         {
-            UriBuilder avUri = new UriBuilder();
-            switch (timeSeries)
-            {
-                case TimeSeries.Intraday:
-                    avUri = AssembleUri(
-                        "time_series_intraday", symbol, true, interval
-                    );
-                    break;
+            Uri uri = BuildUri(timeSeries, symbol);
+            string responseBody = await FetchStockHistory(uri);
 
-                case TimeSeries.Daily:
-                    avUri = AssembleUri(
-                        "time_series_daily", symbol
-                    );
-                    break;
-                case TimeSeries.Weekly:
-                    avUri = AssembleUri("time_series_weekly", symbol);
-                    break;
-                case TimeSeries.Monthly:
-                    avUri = AssembleUri("time_series_monthly", symbol);
-                    break;
-            }
+            return ParseTimeSeriesData(responseBody, timeSeries);
+        }
 
+        protected virtual async Task<string> FetchStockHistory(Uri uri)
+        {
             using (var client = new HttpClient())
             {
                 try
                 {
-                    string responseBody = await client.GetStringAsync(avUri.Uri);
+                    string responseBody = await client.GetStringAsync(uri);
                     return responseBody;
                 }
                 catch (HttpRequestException err)
@@ -67,13 +51,10 @@ namespace StockWatcher.Model.Services
             }
         }
 
-        public async Task<IEnumerable<DataPoint>> RequestStockPrice(
-            string symbol, TimeSeries timeSeries, IntervalTypes interval
+        protected DataPoint[] ParseTimeSeriesData(
+            string dataString, TimeSeries timeSeries, IntervalTypes interval = IntervalTypes.OneMinute
         )
         {
-            string responseBody = await FetchStockHistory(
-                symbol, timeSeries, interval
-            );
             string propertyString = "";
             switch (timeSeries)
             {
@@ -96,7 +77,7 @@ namespace StockWatcher.Model.Services
             {
                 parsedResponse =
                 JObject
-                    .Parse(responseBody)[propertyString]
+                    .Parse(dataString)[propertyString]
                     .Value<JObject>();
             }
             catch (System.Exception e)
@@ -125,20 +106,29 @@ namespace StockWatcher.Model.Services
 
             return history;
         }
-        protected UriBuilder AssembleUri(
-            string functionType, string symbol,
-            bool isIntraday = false,
+        protected Uri BuildUri(
+            TimeSeries timeSeriesType, string symbol,
             IntervalTypes interval = IntervalTypes.OneMinute
         )
         {
             var queryTerms = new StringBuilder();
-            queryTerms.Append($"function={functionType}&");
-            queryTerms.Append($"symbol={symbol.ToLower()}&");
-            queryTerms.Append($"apikey={APIKEY}");
-
-            if (isIntraday)
+            switch (timeSeriesType)
             {
-                queryTerms.Append($"&interval={(int)interval}min");
+                case TimeSeries.Intraday:
+                    queryTerms = BuildQuery(
+                        "time_series_intraday", symbol, (int)interval
+                    );
+                    break;
+
+                case TimeSeries.Daily:
+                    queryTerms = BuildQuery("time_series_daily", symbol);
+                    break;
+                case TimeSeries.Weekly:
+                    queryTerms = BuildQuery("time_series_weekly", symbol);
+                    break;
+                case TimeSeries.Monthly:
+                    queryTerms = BuildQuery("time_series_monthly", symbol);
+                    break;
             }
 
             var avUri = new UriBuilder();
@@ -146,7 +136,22 @@ namespace StockWatcher.Model.Services
             avUri.Host = "www.alphavantage.co";
             avUri.Path = "query";
             avUri.Query = queryTerms.ToString();
-            return avUri;
+            return avUri.Uri;
+        }
+        private StringBuilder BuildQuery(
+            string functionType, string symbol, int interval = 0
+        )
+        {
+            var queryTerms = new StringBuilder();
+            queryTerms.Append($"function={functionType}&");
+            queryTerms.Append($"symbol={symbol.ToLower()}&");
+            queryTerms.Append($"apikey={APIKEY}");
+
+            if (interval > 0)
+            {
+                queryTerms.Append($"&interval={interval}min");
+            }
+            return queryTerms;
         }
 
     }
@@ -154,13 +159,8 @@ namespace StockWatcher.Model.Services
 public interface AlphaVantage
 {
     string APIKEY { get; }
-    Task<IEnumerable<DataPoint>> RequestStockPrice(
+    Task<DataPoint[]> RequestStockPrice(
         string symbol, TimeSeries type, IntervalTypes interval
-    );
-    Task<string> FetchStockHistory(
-        string symbol,
-        TimeSeries timeSeries,
-        IntervalTypes interval
     );
 }
 public enum TimeSeries { Intraday, Daily, Weekly, Monthly }
