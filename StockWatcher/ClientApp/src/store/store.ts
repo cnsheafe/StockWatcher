@@ -1,9 +1,4 @@
-import {
-  createStore,
-  Reducer,
-  ActionCreator,
-  applyMiddleware
-} from "redux";
+import { createStore, Reducer, ActionCreator, applyMiddleware } from "redux";
 
 import thunk from "redux-thunk";
 import * as Rx from "rxjs/Rx";
@@ -21,17 +16,25 @@ import {
   ToggleModalDisplay
 } from "./actions";
 
+// import { Ticker, ADD_TICKERS, AddTickers } from "../actions/fetchPrices";
+import { Ticker, AddTickers, ADD_TICKERS, dispatchTickers} from '../actions/dispatchTickers';
 
 // Shape of the App State
 export interface IState {
-  searchResults: Array<Company>,
-  graphs: Array<Graph>,
-  showModal: boolean,
-  modalSymbol: string
+  searchResults: Array<Company>;
+  graphs: Array<Graph>;
+  showModal: boolean;
+  modalSymbol: string;
+  tickers: Ticker[];
 }
 
 // TypeCheck on the reducer
-type ValidAction = SearchResult | AddGraph | RemoveGraph | ToggleModalDisplay;
+type ValidAction =
+  | SearchResult
+  | AddGraph
+  | RemoveGraph
+  | ToggleModalDisplay
+  | AddTickers;
 
 export function reducer(state: IState, action: ValidAction): IState {
   switch (action.type) {
@@ -49,14 +52,10 @@ export function reducer(state: IState, action: ValidAction): IState {
         company: graphAction.company,
         dataset: graphAction.dataPoints,
         labels: graphAction.labels
-      }
+      };
 
-      return Object.assign({}, state,
-      {
-        graphs: [
-          ...state.graphs,
-          newGraph
-        ],
+      return Object.assign({}, state, {
+        graphs: [...state.graphs, newGraph],
         searchResults: []
       });
 
@@ -68,17 +67,19 @@ export function reducer(state: IState, action: ValidAction): IState {
       const newGraphList = [...state.graphs];
       newGraphList.splice(indexToRemove, 1);
 
-      return Object.assign({}, state,
-      {
+      return Object.assign({}, state, {
         graphs: newGraphList
       });
 
     case TOGGLE_MODAL:
-      return Object.assign({}, state, 
-      {
+      return Object.assign({}, state, {
         showModal: !state.showModal,
         modalSymbol: (<ToggleModalDisplay>action).symbol
-      })
+      });
+    case ADD_TICKERS:
+      return Object.assign({}, state, {
+        tickers: action.tickers
+      });
     default:
       return state;
   }
@@ -88,7 +89,8 @@ const initialState: IState = {
   searchResults: [],
   graphs: [],
   showModal: false,
-  modalSymbol: ""
+  modalSymbol: "",
+  tickers: []
 };
 
 export default createStore(reducer, initialState, applyMiddleware(thunk));

@@ -24,7 +24,8 @@ describe("When the reducer", () => {
       searchResults: [],
       graphs: [],
       showModal: false,
-      modalSymbol: ""
+      modalSymbol: "",
+      tickers: []
     };
   });
 
