@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using System;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
 using StockWatcher.Model.Services;
@@ -23,8 +24,16 @@ namespace StockWatcher.Controllers
             var data = service.RequestStockPrices(
                 listOfSymbols.Symbols, TimeSeries.Intraday, IntervalTypes.OneMinute
             );
+
             return Json(data.Result);
         }
+        [HttpOptions]
+        [Route("stockprice")]
+        public void Options()
+        {
+            Redirect("/stockprice");
+        }
+
     }
 
 }

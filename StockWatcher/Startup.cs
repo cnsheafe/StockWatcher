@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +32,7 @@ namespace StockWatcher
 
         public IConfiguration Configuration { get; }
 
-        public void ConfigureDevelopmentServices(IServiceCollection services) 
+        public void ConfigureDevelopmentServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("PostGresConnection");
             ServicesHelper(services, connectionString);
@@ -54,47 +53,44 @@ namespace StockWatcher
             {
                 Console.WriteLine("Is Development");
                 app.UseDeveloperExceptionPage();
-                app.UseWebpackDevMiddleware(
-                    new WebpackDevMiddlewareOptions
-                    {
-                        HotModuleReplacement = true,
-                        ReactHotModuleReplacement = true
-                    }
-                );
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseCors(builder => {
-                builder.AllowAnyOrigin();
+            app.UseCors(builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
             });
 
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}");
-
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
-            });
+            app.UseMvc();
 
             // app.UseHangfireDashboard();
             app.UseHangfireServer(
                 // Heroku Postgres has max connections of 20
-                new BackgroundJobServerOptions{ WorkerCount = 5}
+                new BackgroundJobServerOptions { WorkerCount = 5 }
             );
         }
 
-        private void ServicesHelper(IServiceCollection services, string connectionString) 
+        private void ServicesHelper(IServiceCollection services, string connectionString)
         {
-            services.AddMvc();
             services.AddCors();
+            // services.AddCors(options => {
+            //     options.AddPolicy("Allow All Origins",
+            //     builder => {
+            //         builder.AllowAnyOrigin()
+            //         .AllowAnyMethod()
+            //         .WithHeaders("content-type");
+            //     });
+            // });
+
+            services.AddMvc();
 
             services.AddHangfire(config =>
                 config.UsePostgreSqlStorage(connectionString)
