@@ -16,10 +16,11 @@ namespace StockWatcher.Model.Services.Tests
         public async Task FetchStockHistory()
         {
             var service = new MockAlphaVantageService("SOME_KEY");
-            DataPoint[] data = await service.RequestStockPrice("msft", TimeSeries.Intraday, IntervalTypes.OneMinute);
+            Dictionary<string, DataPoint[]> data = await service.RequestStockPrices(new string[]{"msft"}, TimeSeries.Intraday, IntervalTypes.OneMinute);
 
-            Assert.NotNull(data);
-            Assert.NotEmpty(data);
+            Assert.True(data.ContainsKey("msft"));
+            Assert.NotNull(data["msft"]);
+            Assert.NotEmpty(data["msft"]);
         }
         private class MockAlphaVantageService : AlphaVantageService
         {
