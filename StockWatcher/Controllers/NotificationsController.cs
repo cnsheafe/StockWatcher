@@ -29,6 +29,7 @@ namespace StockWatcher.Controllers
         }
 
         [HttpPost]
+        [Route("/watch")]
         public async Task WatchPrice([FromBody]Stock stock)
         {
             if (ModelState.IsValid)
