@@ -18,20 +18,20 @@ namespace StockWatcher.Controllers
         }
 
         [HttpPost]
-        [Route("stockprice")]
+        [Route("/stockprice")]
         public IActionResult Index([FromBody]ListOfSymbols listOfSymbols)
         {
             var data = service.RequestStockPrices(
                 listOfSymbols.Symbols, TimeSeries.Intraday, IntervalTypes.OneMinute
             );
-
             return Json(data.Result);
         }
         [HttpOptions]
-        [Route("stockprice")]
+        [Route("/stockprice")]
         public void Options()
         {
-            Redirect("/stockprice");
+            Response.Headers.Add("Access-Control-Allow-Origin", "https://stock-watcher-client.herokuapp.com");
+            Response.Headers.Add("Access-Control-Allow-Methods", "POST");
         }
 
     }
