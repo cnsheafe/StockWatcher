@@ -40,7 +40,7 @@ namespace StockWatcher.Model.Services
             try
             {
 
-                if (checker.IsOverLimit(stock.Phone))
+                if (IsOverLimit(stock.Phone))
                 {
                     return false;
                 }
@@ -52,10 +52,10 @@ namespace StockWatcher.Model.Services
                     TwilioBinding = Guid.NewGuid().ToString()
                 };
 
-                twilio.BindUser(request.TwilioBinding, stock.Phone);
+                BindUser(request.TwilioBinding, stock.Phone);
 
                 context.Requests.Add(request);
-                checker.Increment(stock.Phone);
+                IncrementCount(stock.Phone);
                 context.SaveChanges();
             }
             catch (DbUpdateException dbException)
@@ -90,7 +90,7 @@ namespace StockWatcher.Model.Services
 
         public async Task<bool> ScheduleWatch(Stock stock, string jobId)
         {
-            var data = await RequestStockPrices(new string[] { stock.Symbol }, TimeSeries.Intraday, IntervalTypes.OneMinute);
+            var data = await FetchStockPrices(new string[] { stock.Symbol }, TimeSeries.Intraday, IntervalTypes.OneMinute);
 
             DataPoint[] priceHistory;
             if (!data.TryGetValue(stock.Symbol, out priceHistory))
@@ -101,17 +101,52 @@ namespace StockWatcher.Model.Services
             double latestPrice = priceHistory[0].Price;
             if (latestPrice > stock.Price)
             {
-                RecurringJob.RemoveIfExists(jobId);
-                twilio.NotifyUsers(stock, latestPrice);
+                RemoveIfExists(jobId);
+                NotifyUsers(stock, latestPrice);
                 RemoveRequest(stock);
             }
             else
             {
-                RecurringJob.AddOrUpdate(jobId, () => ScheduleWatch(stock, jobId), Cron.Minutely);
+                // RecurringJob.AddOrUpdate(jobId, () => ScheduleWatch(stock, jobId), Cron.Minutely);
+                AddOrUpdate(jobId, stock);
             }
             return true;
+        }
+        protected virtual bool IsOverLimit(string phone)
+        {
+            return checker.IsOverLimit(phone);
+        }
+
+        protected virtual void BindUser(string twilioBinding, string phone)
+        {
+            twilio.BindUser(twilioBinding, phone);
+        }
+
+        protected virtual void IncrementCount(string phone)
+        {
+            checker.Increment(phone);
+        }
+
+        protected virtual void NotifyUsers(Stock stock, double latestPrice)
+        {
+            twilio.NotifyUsers(stock, latestPrice);
+        }
+
+        protected virtual async Task<Dictionary<string, DataPoint[]>> FetchStockPrices(string[] symbols, TimeSeries timeSeries, IntervalTypes interval
+        )
+        {
+            return await RequestStockPrices(symbols, timeSeries, interval);
 
         }
+
+        protected virtual void RemoveIfExists(string jobId) {
+            RecurringJob.RemoveIfExists(jobId);
+        }
+
+        protected virtual void AddOrUpdate(string jobId, Stock stock) {
+            RecurringJob.AddOrUpdate(jobId, () => ScheduleWatch(stock, jobId), Cron.Minutely);
+        }
+
     }
 
     public interface IWatchService
