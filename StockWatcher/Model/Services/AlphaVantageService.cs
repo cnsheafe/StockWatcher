@@ -165,7 +165,7 @@ namespace StockWatcher.Model.Services
         /// <summary>
         /// Constructs the query terms for AlphaVantage API.
         /// </summary>
-        private StringBuilder BuildQuery(
+        protected StringBuilder BuildQuery(
             string functionType, string symbol, int interval = 0
         )
         {
