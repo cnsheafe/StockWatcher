@@ -81,15 +81,6 @@ namespace StockWatcher
         private void ServicesHelper(IServiceCollection services, string connectionString)
         {
             services.AddCors();
-            // services.AddCors(options => {
-            //     options.AddPolicy("Allow All Origins",
-            //     builder => {
-            //         builder.AllowAnyOrigin()
-            //         .AllowAnyMethod()
-            //         .WithHeaders("content-type");
-            //     });
-            // });
-
             services.AddMvc();
 
             services.AddHangfire(config =>
@@ -101,10 +92,23 @@ namespace StockWatcher
                 options.UseNpgsql(connectionString)
             );
 
-            services.AddScoped<IStockRequestService, StockRequestService>();
+            var AV_KEY = Environment.GetEnvironmentVariable("AV_KEY");
+            var ACCT_SID = Environment.GetEnvironmentVariable(
+                "TwilioAcctSid"
+            );
+            var AUTH_TOKEN = Environment.GetEnvironmentVariable(
+                "TwilioAuthToken"
+            );
+            var SRV_SID = Environment.GetEnvironmentVariable(
+                "TwilioServiceSid"
+            );
+
+
+            services.AddTransient<IWatchService, WatchService>(provider => new WatchService(provider.GetService<StockDbContext>(), AV_KEY, ACCT_SID, AUTH_TOKEN, SRV_SID));
+            services.AddTransient<ITwilioService, TwilioService>(provider => new TwilioService(provider.GetService<StockDbContext>(), ACCT_SID, AUTH_TOKEN, SRV_SID));
             services.AddTransient<IQueryCompanyService, QueryCompanyService>();
             services.AddTransient<AlphaVantage, AlphaVantageService>
-            (avService => new AlphaVantageService(Environment.GetEnvironmentVariable("AV_KEY")));
+            (avService => new AlphaVantageService(AV_KEY));
         }
 
     }

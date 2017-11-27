@@ -21,11 +21,11 @@ namespace StockWatcher.Controllers
 {
     public class NotificationsController : Controller
     {
-        private readonly IStockRequestService requestService;
-        private StockDbContext context;
-        public NotificationsController(StockDbContext _context)
+        private readonly IWatchService watch;
+        private readonly StockDbContext context;
+        public NotificationsController(IWatchService watchService)
         {
-            requestService = new StockRequestService(_context);
+            watch = watchService;
         }
 
         [HttpPost]
@@ -34,10 +34,10 @@ namespace StockWatcher.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (requestService.AddRequest(stock))
+                if (watch.AddRequest(stock))
                 {
-                    bool success = await requestService.QueryStock(stock, "no_id");
-                    if(success)
+                    bool success = await watch.ScheduleWatch(stock, "no_id");
+                    if (success)
                     {
                         Response.StatusCode = 201;
                     }

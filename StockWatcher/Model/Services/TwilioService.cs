@@ -8,31 +8,23 @@ using Twilio.Types;
 
 using StockWatcher.Model.Schemas;
 
-namespace StockWatcher.Model.Services.Helpers
+namespace StockWatcher.Model.Services
 {
-    public class StockRequestHelper
+    public class TwilioService : ITwilioService
     {
-        private string accountSid;
-        private string authToken;
-        private string serviceSid;
+        private readonly string accountSid;
+        private readonly string authToken;
+        private readonly string serviceSid;
 
 
-        private IStockDbContext context;
+        private readonly IStockDbContext context;
 
-        public StockRequestHelper(IStockDbContext _context)
+        public TwilioService(IStockDbContext _context, string ACCT_SID, string AUTH_TOKEN, string SRV_SID)
         {
             context = _context;
-            accountSid = Environment.GetEnvironmentVariable(
-                "TwilioAcctSid"
-            );
-
-            authToken = Environment.GetEnvironmentVariable(
-                "TwilioAuthToken"
-            );
-
-            serviceSid = Environment.GetEnvironmentVariable(
-                "TwilioServiceSid"
-            );
+            accountSid = ACCT_SID;
+            authToken = AUTH_TOKEN;
+            serviceSid = SRV_SID;
         }
 
         /// <summary>
@@ -44,7 +36,7 @@ namespace StockWatcher.Model.Services.Helpers
         /// <param name="openPrice">
         /// The latest stock price.
         /// </param>
-        public NotificationResource NotifyUsers(Stock stock, double openPrice)
+        public NotificationResource NotifyUsers(Stock stock, double latestPrice)
         {
             var userIdentities = new List<string>();
             List<RequestRecord> matchingStocks = context.Requests
@@ -60,7 +52,7 @@ namespace StockWatcher.Model.Services.Helpers
             NotificationResource notification = NotificationResource.Create(
                 serviceSid,
                 identity: userIdentities,
-                body: $"${stock.Symbol.ToUpper()} has exceeded target price of {stock.Price} and has reached price ${openPrice}"
+                body: $"${stock.Symbol.ToUpper()} has exceeded target price of {stock.Price} and has reached price ${latestPrice}"
             );
 
             return notification;
@@ -79,5 +71,10 @@ namespace StockWatcher.Model.Services.Helpers
             );
             return binding;
         }
+    }
+
+    public interface ITwilioService {
+        NotificationResource NotifyUsers(Stock stock, double latestPrice);
+        BindingResource BindUser(string uuid, string phoneNumber);
     }
 }
