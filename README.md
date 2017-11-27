@@ -19,7 +19,7 @@ User Features
 Technical Features
 -
 
-* Server-side rendering for faster display
+* MVC Model Validation and CORS Middleware
 * Background Scheduler for alerts
 * Docker for portability
 
@@ -42,6 +42,7 @@ Tech Stack
 * Chart.js
 * Fetch API
 * Material Icons
+* Sass/SCSS
 
 Third-Party APIs
 -
@@ -53,11 +54,8 @@ Development Tools
 -
 
 * Xunit
-* Webpack
-* SCSS
-* Jest
+* VSCode .NET debugger
 * Travis CI
-* Enzyme
 
 Architecture
 -
@@ -72,7 +70,7 @@ The app is wrapped within a Docker container for portability.
 Instructions for Development
 -
 
-Developing StockWatcher requires ASPNET Core v2.0, Node.js, Webpack, Sass/SCSS, and Typescript.
+Developing StockWatcher requires ASPNET Core v2.0, PostgreSQL, and Docker.
 
 Always start with the following:
 
