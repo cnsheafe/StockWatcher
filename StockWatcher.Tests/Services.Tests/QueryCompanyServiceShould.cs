@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
+
 
 using StockWatcher.Model.Schemas;
 
@@ -33,12 +35,15 @@ namespace StockWatcher.Model.Services.Tests
         {
             var query = new Query
             {
-                SearchPhrase="msf"
+                SearchPhrase="msft"
             };
             IEnumerable<Company> companies = service.SearchCompanies(query);
 
             Assert.NotNull(companies);
             Assert.NotEmpty(companies);
+            Assert.Single(companies);
+            Assert.Equal(companies.Single().Name, "Microsoft");
+            Assert.Equal(companies.Single().Symbol, "MSFT");
         }
     }
     
