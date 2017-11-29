@@ -9,6 +9,9 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Controllers
 {
+    /// <summary>
+    /// Handles requests for fetching stockprices
+    /// </summary>
     public class StockPriceController : Controller
     {
         private AlphaVantage service;
@@ -17,6 +20,15 @@ namespace StockWatcher.Controllers
             service = context;
         }
 
+        /// <summary>
+        /// Fetches stockprices from AlphaVantage based on companies.
+        /// </summary>
+        /// <param name="listOfSymbols">
+        /// JSON of company names to fetch prices for.
+        /// </param>
+        /// <returns>
+        /// JSON of time-series data of each company or null on AV-side error.
+        /// </returns>
         [HttpPost]
         [Route("/stockprice")]
         public IActionResult Index([FromBody]ListOfSymbols listOfSymbols)
@@ -26,6 +38,10 @@ namespace StockWatcher.Controllers
             );
             return Json(data.Result);
         }
+
+        /// <summary>
+        /// CORS Pre-flight since incoming data is JSON.
+        /// </summary>
         [HttpOptions]
         [Route("/stockprice")]
         public void Options()

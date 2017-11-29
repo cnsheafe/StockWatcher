@@ -19,6 +19,9 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Controllers
 {
+    /// <summary>
+    /// Handles all requests for watches.
+    /// </summary>
     public class NotificationsController : Controller
     {
         private readonly IWatchService watch;
@@ -27,6 +30,13 @@ namespace StockWatcher.Controllers
             watch = watchService;
         }
 
+        /// <summary>
+        /// Handles requests for watches on particular stock prices. If successful,
+        /// the user's request is tabled and an SMS message is sent when the target price is met.
+        /// </summary>
+        /// <param name="stock">
+        /// Contains info such as the user's phone number and target price.
+        /// </param>
         [HttpPost]
         [Route("/watch")]
         public async Task WatchPrice([FromBody]Stock stock)

@@ -13,9 +13,12 @@ namespace StockWatcher.Model
             db.ExecuteSqlCommand(@"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"" ");
             db.CloseConnection();
         }
-
+        
+        // Set of companies to lookup
         public DbSet<Company> Companies { get; set; }
+        // Requests to make for SMS and watches
         public DbSet<RequestRecord> Requests { get; set; }
+        // Counts the number of requests made by a user
         public DbSet<LimitCount> LimitCounts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

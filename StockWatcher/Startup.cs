@@ -78,6 +78,11 @@ namespace StockWatcher
             );
         }
 
+        /// <summary>
+        /// Helper method for configuring services.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="connectionString"></param>
         private void ServicesHelper(IServiceCollection services, string connectionString)
         {
             services.AddCors();

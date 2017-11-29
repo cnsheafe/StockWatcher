@@ -14,6 +14,10 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model.Services
 {
+
+    /// <summary>
+    /// Gather time-series for stocks from the AlphaVantage API.
+    /// </summary>
     public class AlphaVantageService : AlphaVantage
     {
 
