@@ -22,7 +22,6 @@ namespace StockWatcher.Controllers
     public class NotificationsController : Controller
     {
         private readonly IWatchService watch;
-        private readonly StockDbContext context;
         public NotificationsController(IWatchService watchService)
         {
             watch = watchService;
