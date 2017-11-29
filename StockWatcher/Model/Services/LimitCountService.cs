@@ -11,13 +11,13 @@ using BCrypt.Net;
 
 using StockWatcher.Model.Schemas;
 
-namespace StockWatcher.Model.Services.Helpers
+namespace StockWatcher.Model.Services
 {
-    public class LimitCountChecker
+    public class LimitCountService : ILimitCount
     {
         private IStockDbContext context;
         private int limit = 5;
-        public LimitCountChecker(IStockDbContext _context)
+        public LimitCountService(IStockDbContext _context)
         {
             context = _context;
         }
@@ -136,5 +136,12 @@ namespace StockWatcher.Model.Services.Helpers
         {
             return BCrypt.Net.BCrypt.Verify(phone, hash);
         }
+    }
+    public interface ILimitCount {
+        bool IsNewEntry(string phone);
+        bool AddEntry(string phone);
+        bool IsOverLimit(string phone);
+        bool Increment(string phone);
+        bool IsExpired(string phone);
     }
 }
