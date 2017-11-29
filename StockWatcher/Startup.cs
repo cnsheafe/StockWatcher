@@ -104,12 +104,15 @@ namespace StockWatcher
             );
 
 
-            services.AddTransient<IWatchService, WatchService>(provider => new WatchService(provider.GetService<StockDbContext>(), AV_KEY, ACCT_SID, AUTH_TOKEN, SRV_SID));
-            services.AddTransient<ITwilioService, TwilioService>(provider => new TwilioService(provider.GetService<StockDbContext>(), ACCT_SID, AUTH_TOKEN, SRV_SID));
-            services.AddTransient<IQueryCompanyService, QueryCompanyService>();
-            services.AddTransient<AlphaVantage, AlphaVantageService>
-            (avService => new AlphaVantageService(AV_KEY));
-        }
+            services.AddScoped<ITwilioService, TwilioService>(provider => new TwilioService(provider.GetService<StockDbContext>(), ACCT_SID, AUTH_TOKEN, SRV_SID));
 
+            services.AddScoped<AlphaVantage, AlphaVantageService>(provider => new AlphaVantageService(AV_KEY));
+
+            services.AddScoped<ILimitCount, LimitCountService>(provider => new LimitCountService(provider.GetService<StockDbContext>()));
+
+            services.AddScoped<IWatchService, WatchService>(provider => new WatchService(provider.GetService<StockDbContext>(), provider.GetService<ITwilioService>(), provider.GetService<AlphaVantage>(), provider.GetService<ILimitCount>()));
+
+            services.AddScoped<IQueryCompanyService, QueryCompanyService>();
+        }
     }
 }
