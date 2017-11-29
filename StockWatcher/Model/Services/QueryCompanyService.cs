@@ -9,6 +9,9 @@ using StockWatcher.Model.Schemas;
 
 namespace StockWatcher.Model.Services
 {
+    /// <summary>
+    /// Accesses the database for matching company names.
+    /// </summary>
     public class QueryCompanyService : IQueryCompanyService
     {
         private readonly IStockDbContext context;
@@ -17,6 +20,13 @@ namespace StockWatcher.Model.Services
             context = _context;
         }
 
+        /// <summary>
+        /// Retrieve matching companies based on the query.
+        /// </summary>
+        /// <param name="query">
+        /// A searchphrase that matches against symbols and company names.
+        /// </param>
+        /// <returns>A collection of companies that match the query.</returns>
         public IEnumerable<Company> SearchCompanies(Query query)
         {
             var table = context.Companies;
@@ -28,6 +38,8 @@ namespace StockWatcher.Model.Services
 
             var searchPhraseBlocks = query.SearchPhrase.Split(" ");
             var newSearchPhrase = new StringBuilder();
+
+            //Capitalizes the searchphrase to match against database
             foreach (var block in searchPhraseBlocks)
             {
                 var newBlock = block.Substring(0, 1).ToUpper() + block.Substring(1) + " ";

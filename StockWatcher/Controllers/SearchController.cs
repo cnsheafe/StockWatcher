@@ -15,6 +15,9 @@ using StockWatcher.Model.Services;
 
 namespace StockWatcher.Controllers
 {
+    /// <summary>
+    /// Handles requests to lookup company names and stock symbols.
+    /// </summary>
     public class SearchController : Controller
     {
         private readonly IQueryCompanyService service;
@@ -25,15 +28,24 @@ namespace StockWatcher.Controllers
             service = new QueryCompanyService(context);
         }
 
+        /// <summary>
+        /// Gets companies that match the query.
+        /// </summary>
+        /// <param name="query">
+        /// A searchphrase.
+        /// </param>
+        /// <returns>
+        /// Returns JSON of matching companies, if any
+        /// </returns>
         [HttpGet("/company")]
         public IActionResult GetCompany([FromQuery]Query query)
         {
-            if(!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 return null;
             }
             JsonResult apiResult = Json(service.SearchCompanies(query));
-            if(apiResult == null) 
+            if (apiResult == null)
             {
                 Response.StatusCode = 400;
                 return null;

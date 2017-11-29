@@ -9,6 +9,7 @@ using StockWatcher.Model.Services.Helpers;
 
 namespace StockWatcher.Model
 {
+    // Used to work around an error .NET throws
     public class StockDbContextFactory : IDesignTimeDbContextFactory<StockDbContext>
     {
 
