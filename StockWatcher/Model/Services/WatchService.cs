@@ -21,16 +21,18 @@ using StockWatcher.Model.Services.Helpers;
 
 namespace StockWatcher.Model.Services
 {
-    public class WatchService : AlphaVantageService, IWatchService
+    public class WatchService : IWatchService
     {
         private readonly IStockDbContext context;
-        private ITwilioService twilio;
-        private LimitCountChecker checker;
-        public WatchService(IStockDbContext _context, string AVKEY, string ACCT_SID, string AUTH_TOKEN, string SRV_SID) : base(AVKEY)
+        private readonly ITwilioService twilio;
+        private readonly AlphaVantage alphaVantage;
+        private ILimitCount limit;
+        public WatchService(IStockDbContext _context, ITwilioService twilioService, AlphaVantage alpha, ILimitCount limitCount)
         {
             context = _context;
-            twilio = new TwilioService(_context, ACCT_SID, AUTH_TOKEN, SRV_SID);
-            checker = new LimitCountChecker(_context);
+            twilio = twilioService;
+            alphaVantage = alpha;
+            limit = limitCount;
         }
 
         public bool AddRequest(Stock stock)
@@ -40,7 +42,7 @@ namespace StockWatcher.Model.Services
             try
             {
 
-                if (IsOverLimit(stock.Phone))
+                if (limit.IsOverLimit(stock.Phone))
                 {
                     return false;
                 }
@@ -52,10 +54,10 @@ namespace StockWatcher.Model.Services
                     TwilioBinding = Guid.NewGuid().ToString()
                 };
 
-                BindUser(request.TwilioBinding, stock.Phone);
+                twilio.BindUser(request.TwilioBinding, stock.Phone);
 
                 context.Requests.Add(request);
-                IncrementCount(stock.Phone);
+                limit.Increment(stock.Phone);
                 context.SaveChanges();
             }
             catch (DbUpdateException dbException)
@@ -90,7 +92,7 @@ namespace StockWatcher.Model.Services
 
         public async Task<bool> ScheduleWatch(Stock stock, string jobId)
         {
-            var data = await FetchStockPrices(new string[] { stock.Symbol }, TimeSeries.Intraday, IntervalTypes.OneMinute);
+            var data = await alphaVantage.RequestStockPrices(new string[] { stock.Symbol }, TimeSeries.Intraday, IntervalTypes.OneMinute);
 
             DataPoint[] priceHistory;
             if (!data.TryGetValue(stock.Symbol, out priceHistory))
@@ -102,48 +104,23 @@ namespace StockWatcher.Model.Services
             if (latestPrice > stock.Price)
             {
                 RemoveIfExists(jobId);
-                NotifyUsers(stock, latestPrice);
+                twilio.NotifyUsers(stock, latestPrice);
                 RemoveRequest(stock);
             }
             else
             {
-                // RecurringJob.AddOrUpdate(jobId, () => ScheduleWatch(stock, jobId), Cron.Minutely);
                 AddOrUpdate(jobId, stock);
             }
             return true;
         }
-        protected virtual bool IsOverLimit(string phone)
+
+        protected virtual void RemoveIfExists(string jobId)
         {
-            return checker.IsOverLimit(phone);
-        }
-
-        protected virtual void BindUser(string twilioBinding, string phone)
-        {
-            twilio.BindUser(twilioBinding, phone);
-        }
-
-        protected virtual void IncrementCount(string phone)
-        {
-            checker.Increment(phone);
-        }
-
-        protected virtual void NotifyUsers(Stock stock, double latestPrice)
-        {
-            twilio.NotifyUsers(stock, latestPrice);
-        }
-
-        protected virtual async Task<Dictionary<string, DataPoint[]>> FetchStockPrices(string[] symbols, TimeSeries timeSeries, IntervalTypes interval
-        )
-        {
-            return await RequestStockPrices(symbols, timeSeries, interval);
-
-        }
-
-        protected virtual void RemoveIfExists(string jobId) {
             RecurringJob.RemoveIfExists(jobId);
         }
 
-        protected virtual void AddOrUpdate(string jobId, Stock stock) {
+        protected virtual void AddOrUpdate(string jobId, Stock stock)
+        {
             RecurringJob.AddOrUpdate(jobId, () => ScheduleWatch(stock, jobId), Cron.Minutely);
         }
 

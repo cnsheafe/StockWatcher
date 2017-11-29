@@ -36,7 +36,7 @@ namespace StockWatcher.Model.Services
         /// <param name="openPrice">
         /// The latest stock price.
         /// </param>
-        public NotificationResource NotifyUsers(Stock stock, double latestPrice)
+        public virtual NotificationResource NotifyUsers(Stock stock, double latestPrice)
         {
             var userIdentities = new List<string>();
             List<RequestRecord> matchingStocks = context.Requests
@@ -57,7 +57,7 @@ namespace StockWatcher.Model.Services
 
             return notification;
         }
-        public BindingResource BindUser(string uuid, string phoneNumber)
+        public virtual BindingResource BindUser(string uuid, string phoneNumber)
         {
             TwilioClient.Init(
                 accountSid,

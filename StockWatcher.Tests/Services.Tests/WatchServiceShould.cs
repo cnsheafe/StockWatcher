@@ -19,10 +19,11 @@ namespace StockWatcher.Model.Services.Tests
     public class WatchServiceShould
     {
         private MockDbContext context;
-        private WatchService mockService;
+        private ITwilioService mockTwilio;
+        private AlphaVantage mockAlpha;
+        private ILimitCount mockLimitCount;
+        private MockWatchService mockService;
         private Stock mockStock;
-
-        private string DB_URL;
         private string PHONE;
 
         public WatchServiceShould()
@@ -33,7 +34,11 @@ namespace StockWatcher.Model.Services.Tests
 
             context.Requests.Add(new RequestRecord { Id = 0, RequestId = "abc", TwilioBinding = new Guid().ToString(), Price = 10 });
 
-            mockService = new MockWatchService(context, "", "", "", "");
+            mockTwilio = new MockTwilioService(context, "", "", "");
+            mockAlpha = new MockAlphaVantageService("");
+            mockLimitCount = new LimitCountService(context);
+
+            mockService = new MockWatchService(context, mockTwilio, mockAlpha, mockLimitCount);
 
             mockStock = new Stock
             {
@@ -68,52 +73,20 @@ namespace StockWatcher.Model.Services.Tests
 
             Assert.True(await mockService.ScheduleWatch(mockStock, jobId));
         }
+
         private class MockWatchService : WatchService
         {
-            public MockWatchService(IStockDbContext _context, string AVKEY, string ACCT_SID, string AUTH_TOKEN, string SRV_SID) : base(_context, AVKEY, ACCT_SID, AUTH_TOKEN, SRV_SID)
-            {
-            }
-
-            protected override bool IsOverLimit(string phone)
-            {
-                if (String.Compare(phone, "NEW_PHONE") == 0)
-                {
-                    return false;
-                }
-                return true;
-            }
-
-            protected override void BindUser(string twilioBinding, string phone)
-            {
-                // Do Nothing!
-            }
-
-            protected override void NotifyUsers(Stock stock, double latestPrice)
-            {
-                //Do Nothing!
-            }
-
-            protected override void IncrementCount(string phone)
-            {
-                // Do NOthing!
-            }
-            protected override async Task<Dictionary<string, DataPoint[]>> FetchStockPrices(string[] symbols, TimeSeries timeSeries, IntervalTypes interval)
-            {
-                var mockDict = new Dictionary<string, DataPoint[]>();
-                mockDict.Add("msft", new DataPoint[] { new DataPoint { TimeStamp = "10:00", Price = 10 } });
-                return mockDict;
-            }
+            public MockWatchService(IStockDbContext context, ITwilioService twilio, AlphaVantage alpha, ILimitCount limitCount) : base(context, twilio, alpha, limitCount) { }
 
             protected override void AddOrUpdate(string jobId, Stock stock)
             {
-                // do nothing!
+                // No good way to inject Hangfire, so do nothing!
             }
 
-            protected override void RemoveIfExists(string jobId) {
-                // do nothing!
+            protected override void RemoveIfExists(string jobId)
+            {
+                // No good way to inject Hangfire, so do nothing!
             }
-
-
         }
     }
 }
